@@ -58,7 +58,6 @@ int TAG_COSTUME_TOGGLE_INDEX = -1;
 int CROWD_CHEER_TOGGLE_INDEX = -1;
 int STALING_TOGGLE_INDEX = -1;
 int STAGELIST_INDEX = -1;
-int THEME_INDEX = -1;
 int CSS_VERSION_SETTING_INDEX = -1;
 int ALL_CHARS_WALLJUMP_INDEX = -1;
 int ALC_P1_INDEX = -1;
@@ -298,8 +297,8 @@ void CodeMenu()
 	MainLines.push_back(new Selection("Stagelist", { "Brawl", "Project+" }, 0, STAGELIST_INDEX));
 #endif
 	constantOverrides.emplace_back(0x80523400, STAGELIST_INDEX);
-	MainLines.push_back(new Selection("Theme", { "Brawl", "Project+" }, 0, THEME_INDEX));
 	MainLines.push_back(new Selection("CSS Roster Version", { "Brawl", "Project+"}, 0, CSS_VERSION_SETTING_INDEX));
+	constantOverrides.emplace_back(0x800017B4, CSS_VERSION_SETTING_INDEX);
 	//	MainLines.push_back(new Selection("Endless Friendlies", { "OFF", "Same Stage", "Random Stage", "Round Robin" }, 0, INFINITE_FRIENDLIES_INDEX));
 	//	MainLines.push_back(new Selection("Endless Friendlies Mode", { "OFF", "All Stay", "Winner Stays", "Loser Stays", "Rotation"}, 0, ENDLESS_FRIENDLIES_MODE_INDEX));
 	MainLines.push_back(new Selection("Endless Friendlies", { "OFF", "ON", "ON (1v1)"}, 0, ENDLESS_FRIENDLIES_MODE_INDEX));
@@ -790,9 +789,6 @@ void CreateMenu(Page MainPage)
 
 	// CSS VER Modifier
 	AddValueToByteArray(CSS_VERSION_SETTING_INDEX, Header);
-
-	//Theme toggle
-	AddValueToByteArray(THEME_INDEX, Header);
 
 	//Universal walljump
 	AddValueToByteArray(ALL_CHARS_WALLJUMP_INDEX, Header);

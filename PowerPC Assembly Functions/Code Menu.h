@@ -58,7 +58,6 @@ extern int P4_TAG_STRING_INDEX;
 extern int TAG_COSTUME_TOGGLE_INDEX;
 extern int CROWD_CHEER_TOGGLE_INDEX;
 extern int STAGELIST_INDEX;
-extern int THEME_INDEX;
 extern int CSS_VERSION_SETTING_INDEX;
 extern int ALL_CHARS_WALLJUMP_INDEX;
 extern int ALC_P1_INDEX;
@@ -203,9 +202,7 @@ static const int SHOULD_RESET_STAGE_COLLISIONS_FLAG_LOC = SHOULD_RESET_HITBOX_DI
 
 static const int STAGELIST_LOC = SHOULD_RESET_STAGE_COLLISIONS_FLAG_LOC + 4; //4
 
-static const int THEME_INDEX_LOC = STAGELIST_LOC + 4; //4
-
-static const int CSS_VER_LOC = THEME_INDEX_LOC + 4; //4
+static const int CSS_VER_LOC = STAGELIST_LOC + 4; //4
 
 static const int ALL_CHARS_WALLJUMP_LOC = CSS_VER_LOC + 4; //4
 

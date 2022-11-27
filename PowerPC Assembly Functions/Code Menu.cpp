@@ -297,8 +297,13 @@ void CodeMenu()
 	MainLines.push_back(new Selection("Stagelist", { "Brawl", "Project+" }, 0, STAGELIST_INDEX));
 #endif
 	constantOverrides.emplace_back(0x80523400, STAGELIST_INDEX);
-	MainLines.push_back(new Selection("CSS Roster Version", { "Brawl", "Project+"}, 0, CSS_VERSION_SETTING_INDEX));
-	constantOverrides.emplace_back(0x800017B4, CSS_VERSION_SETTING_INDEX);
+
+	// Only include the Roster Line if there's more than one to choose between.
+	if (ROSTER_LIST.size() > 1) 
+	{
+		MainLines.push_back(new Selection("CSS Roster Version", ROSTER_LIST, 0, CSS_VERSION_SETTING_INDEX));
+	}
+
 	//	MainLines.push_back(new Selection("Endless Friendlies", { "OFF", "Same Stage", "Random Stage", "Round Robin" }, 0, INFINITE_FRIENDLIES_INDEX));
 	//	MainLines.push_back(new Selection("Endless Friendlies Mode", { "OFF", "All Stay", "Winner Stays", "Loser Stays", "Rotation"}, 0, ENDLESS_FRIENDLIES_MODE_INDEX));
 	MainLines.push_back(new Selection("Endless Friendlies", { "OFF", "ON", "ON (1v1)"}, 0, ENDLESS_FRIENDLIES_MODE_INDEX));

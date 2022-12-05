@@ -147,6 +147,25 @@ const std::vector<std::vector<unsigned char>> ROSTER_RAND_ID_LISTS = {
 		0x27, 0x30
 	},
 };
+const std::vector<std::vector<std::pair<unsigned char, unsigned char>>> ROSTER_L_LOAD_PAIRS =
+{
+	// Brawl Roster L-Loads
+	{
+		{0x03, 0x04}, // Samus		->		Zero Suit Samus
+		{0x11, 0x2D}, // Marth		->		Roy
+		{0x0C, 0x38}, // Bowser		->		Giga
+		{0x10, 0x37}, // ICs		->		SoPo
+		{0x15, 0x36}, // Wario		->		Warioman
+		{0x20, 0x2E}, // Lucario	->		Mewtwo
+		{0x27, 0x30}, // Sonic		->		Knuckles
+	},
+	// P+ Roster L-Loads
+	{
+		{0x0C, 0x38}, // Bowser		->		Giga
+		{0x10, 0x37}, // ICs		->		SoPo
+		{0x15, 0x36}, // Wario		->		Warioman
+	},
+};
 
 
 
@@ -238,9 +257,7 @@ static const int SHOULD_RESET_STAGE_COLLISIONS_FLAG_LOC = SHOULD_RESET_HITBOX_DI
 
 static const int STAGELIST_LOC = SHOULD_RESET_STAGE_COLLISIONS_FLAG_LOC + 4; //4
 
-static const int CSS_VER_LOC = STAGELIST_LOC + 4; //4
-
-static const int ALL_CHARS_WALLJUMP_LOC = CSS_VER_LOC + 4; //4
+static const int ALL_CHARS_WALLJUMP_LOC = STAGELIST_LOC + 4; //4
 
 static const int ALC_P1_LOC = ALL_CHARS_WALLJUMP_LOC + 4; //4
 static const int ALC_P2_LOC = ALC_P1_LOC + 4; //4
@@ -249,7 +266,9 @@ static const int ALC_P4_LOC = ALC_P3_LOC + 4; //4
 
 static const int DRAW_SETTINGS_BUFFER_LOC = ALC_P4_LOC + 4; //0x200
 
-static const int START_OF_CODE_MENU = DRAW_SETTINGS_BUFFER_LOC + 0x200;
+static const int CSS_VER_LOC = DRAW_SETTINGS_BUFFER_LOC + 0x200; //4
+
+static const int START_OF_CODE_MENU = CSS_VER_LOC + 0x04;
 
 static int CurrentOffset = START_OF_CODE_MENU;
 
@@ -315,7 +334,7 @@ static string scriptsPath = ReadConfigFile(3);
 #if DOLPHIN_BUILD
 static fstream MenuFile(buildPath + "pf/menu3/dnet.cmnu", fstream::out | fstream::binary);
 #else
-static fstream MenuFile(buildPath + "pf/menu3/data.cmnu", fstream::out | fstream::binary);
+static fstream MenuFile(buildPath + "data.cmnu", fstream::out | fstream::binary);
 #endif
 
 class Page;

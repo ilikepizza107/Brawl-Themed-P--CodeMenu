@@ -792,9 +792,6 @@ void CreateMenu(Page MainPage)
 	//Stagelist Looter
 	AddValueToByteArray(STAGELIST_INDEX, Header);
 
-	// CSS VER Modifier
-	AddValueToByteArray(CSS_VERSION_SETTING_INDEX, Header);
-
 	//Universal walljump
 	AddValueToByteArray(ALL_CHARS_WALLJUMP_INDEX, Header);
 
@@ -880,6 +877,9 @@ void CreateMenu(Page MainPage)
 	for (auto x : DSB) {
 		AddValueToByteArray(x, Header);
 	}
+
+	// CSS VER Modifier
+	AddValueToByteArray(CSS_VERSION_SETTING_INDEX, Header);
 
 	if (START_OF_CODE_MENU - START_OF_CODE_MENU_HEADER != Header.size()) {
 		cout << "Messed up header\n";

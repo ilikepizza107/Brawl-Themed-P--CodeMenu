@@ -42,6 +42,7 @@ void cssRosterChange() // Adapted from CSS Roster Change via Code Menu [QuickLav
 		unsigned long charListAddress = 0x80680DE0;
 		unsigned long randListAddress = 0x80680E80;
 		unsigned long randomRangeStoreLocation = 0x800017C0;
+		unsigned long tempLLoadStoreLocation = randomRangeStoreLocation + 0x04;
 
 		ASMStart(0x80682928); // Hooks the second instruction of "__ct/[muSelCharTask]/mu_selchar.o".
 		SetRegister(reg1, CSS_VERSION_SETTING_INDEX); // Load the location of the CSS Roster Line into our first register.
@@ -68,5 +69,58 @@ void cssRosterChange() // Adapted from CSS Roster Change via Code Menu [QuickLav
 		SetRegister(reg1, randomRangeStoreLocation); // Load the address we stored the random character count in before...
 		LWZ(reg1, reg1, 0x00); // ... and load the number stored there into r23.
 		ASMEnd();
+
+		assert(ROSTER_LIST.size() <= ROSTER_L_LOAD_PAIRS.size());
+
+		reg1 = 29;
+		reg2 = 15;
+		ASMStart(0x8068482C);
+		SetRegister(reg2, CSS_VERSION_SETTING_INDEX); // Load the location of the CSS Roster Line into our first register.
+		LWZ(reg2, reg2, Line::VALUE); // Then Look 0x08 past that address to get the selected index of the CSS Roster Line
+		for (std::size_t i = 0; i < ROSTER_LIST.size(); i++) // For each Roster...
+		{
+			If(reg2, EQUAL_I, i); // ... add a case for that index...
+			{
+				// ... in which we check against each specified L-Load...
+				const std::vector<std::pair<unsigned char, unsigned char>>* currPairVec = &ROSTER_L_LOAD_PAIRS[i];
+				for (std::size_t u = 0; u < currPairVec->size(); u++)
+				{
+					const std::pair<unsigned char, unsigned char>* currPair = &currPairVec->at(u);
+					If(reg1, EQUAL_I, currPair->first);
+					{
+						// ... and set r29 if we find a match.
+						SetRegister(reg1, currPair->second);
+					}EndIf();
+				}
+			}EndIf();
+		}
+		SetRegister(reg2, 0);
+		ASMEnd();
+
+
+		reg1 = 5;
+		reg2 = 3;
+		ASMStart(0x80685BE4);
+		SetRegister(reg2, CSS_VERSION_SETTING_INDEX); // Load the location of the CSS Roster Line into our first register.
+		LWZ(reg2, reg2, Line::VALUE); // Then Look 0x08 past that address to get the selected index of the CSS Roster Line
+		for (std::size_t i = 0; i < ROSTER_LIST.size(); i++) // For each Roster...
+		{
+			If(reg2, EQUAL_I, i); // ... add a case for that index...
+			{
+				// ... in which we check against each specified L-Load...
+				const std::vector<std::pair<unsigned char, unsigned char>>* currPairVec = &ROSTER_L_LOAD_PAIRS[i];
+				for (std::size_t u = 0; u < currPairVec->size(); u++)
+				{
+					const std::pair<unsigned char, unsigned char>* currPair = &currPairVec->at(u);
+					If(reg1, EQUAL_I, currPair->second);
+					{
+						// ... and set r29 if we find a match.
+						SetRegister(reg1, currPair->first);
+					}EndIf();
+				}
+			}EndIf();
+		}
+		SetRegister(reg2, 0);
+		ASMEnd(0x90a1003c); // Restore original instruction (stw r5, 0x3C(r1))
 	}
 }

@@ -156,5 +156,82 @@ void cssRosterChange() // Adapted from CSS Roster Change via Code Menu [QuickLav
 		SetRegister(reg2, temporaryRegBackupLocation);
 		LWZ(reg3, reg2, 0x00); // Restore the contents of reg3
 		ASMEnd();
+
+		// Zelda-Sheik Fixes
+
+		// No Sheik From Zelda on P+ Roster
+		reg1 = 24;
+		ASMStart(0x80697f54); 
+		SetRegister(reg1, CSS_VERSION_SETTING_INDEX); // Load the location of the CSS Roster Line into our first register.
+		LWZ(reg1, reg1, Line::VALUE); // Then Look 0x08 past that address to get the selected index of the CSS Roster Line
+		If(reg1, EQUAL_I, 0x00);
+		{
+			CMPI(03, 0x0F, 0);
+		}
+		Else();
+		{
+			CMPI(03, 0xFFFF, 0);
+		}EndIf();
+		ASMEnd();
+
+		// No Zelda From Shiek on P+ Roster
+		reg1 = 24;
+		ASMStart(0x80697ee8);
+		SetRegister(reg1, CSS_VERSION_SETTING_INDEX); // Load the location of the CSS Roster Line into our first register.
+		LWZ(reg1, reg1, Line::VALUE); // Then Look 0x08 past that address to get the selected index of the CSS Roster Line
+		If(reg1, EQUAL_I, 0x00);
+		{
+			CMPI(03, 0x0E, 0);
+		}
+		Else();
+		{
+			CMPI(03, 0xFFFF, 0);
+		}EndIf();
+		ASMEnd();
+
+		// No Zelda Icon Fix on Brawl Roster
+		reg1 = 12;
+		ASMStart(0x806900e4);
+		SetRegister(reg1, CSS_VERSION_SETTING_INDEX); // Load the location of the CSS Roster Line into our first register.
+		LWZ(reg1, reg1, Line::VALUE); // Then Look 0x08 past that address to get the selected index of the CSS Roster Line
+		If(reg1, EQUAL_I, 0x00);
+		{
+			CMPI(23, 0x0E, 0);
+		}
+		Else();
+		{
+			CMPI(23, 0xFFFF, 0);
+		}EndIf();
+		ASMEnd();
+
+		// Sheik Return Slot Fix
+		reg1 = 12;
+		ASMStart(0x80693D6C); // When reloading the CSS with Sheik selected...
+		SetRegister(reg1, CSS_VERSION_SETTING_INDEX); // Load the location of the CSS Roster Line into our first register.
+		LWZ(reg1, reg1, Line::VALUE); // Then Look 0x08 past that address to get the selected index of the CSS Roster Line
+		If(reg1, EQUAL_I, 0x00);
+		{
+			SetRegister(0, 0x01); // ... and on Brawl roster, toggle on the Sheik slot over Zelda's.
+		}
+		Else();
+		{
+			SetRegister(0, 0x00); // Otherwise, ensure Zelda's slot remains her own and isn't overwritten.
+		}EndIf();
+		ASMEnd();
+
+		// Sheik Return Cursor Fix
+		reg1 = 12;
+		ASMStart(0x80693D70); // When reloading the CSS with Sheik selected...
+		SetRegister(reg1, CSS_VERSION_SETTING_INDEX); // Load the location of the CSS Roster Line into our first register.
+		LWZ(reg1, reg1, Line::VALUE); // Then Look 0x08 past that address to get the selected index of the CSS Roster Line
+		If(reg1, EQUAL_I, 0x00);
+		{
+			SetRegister(4, 0x0E); // ... and on Brawl roster, select Zelda's CSS slot (Sheik doesn't have her own).
+		}
+		Else();
+		{
+			SetRegister(4, 0x0F); // Otherwise, select Sheik's slot directly.
+		}EndIf();
+		ASMEnd();
 	}
 }

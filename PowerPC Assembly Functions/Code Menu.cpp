@@ -58,12 +58,12 @@ int TAG_COSTUME_TOGGLE_INDEX = -1;
 int CROWD_CHEER_TOGGLE_INDEX = -1;
 int STALING_TOGGLE_INDEX = -1;
 int STAGELIST_INDEX = -1;
-int CSS_VERSION_SETTING_INDEX = -1;
 int ALL_CHARS_WALLJUMP_INDEX = -1;
 int ALC_P1_INDEX = -1;
 int ALC_P2_INDEX = -1;
 int ALC_P3_INDEX = -1;
 int ALC_P4_INDEX = -1;
+int CSS_VERSION_SETTING_INDEX = -1;
 int EXTERNAL_INDEX = -1;	//Used for codes that use others for context
 
 //constant overrides
@@ -863,6 +863,9 @@ void CreateMenu(Page MainPage)
 	AddValueToByteArray(ALC_P3_INDEX, Header);
 	AddValueToByteArray(ALC_P4_INDEX, Header);
 	//
+
+	// CSS VER Modifier
+	AddValueToByteArray(CSS_VERSION_SETTING_INDEX, Header);
 
 	//draw settings buffer
 	vector<u32> DSB(0x200 / 4, 0);

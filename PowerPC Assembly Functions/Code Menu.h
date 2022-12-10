@@ -58,12 +58,12 @@ extern int P4_TAG_STRING_INDEX;
 extern int TAG_COSTUME_TOGGLE_INDEX;
 extern int CROWD_CHEER_TOGGLE_INDEX;
 extern int STAGELIST_INDEX;
+extern int CSS_VERSION_SETTING_INDEX;
 extern int ALL_CHARS_WALLJUMP_INDEX;
 extern int ALC_P1_INDEX;
 extern int ALC_P2_INDEX;
 extern int ALC_P3_INDEX;
 extern int ALC_P4_INDEX;
-extern int CSS_VERSION_SETTING_INDEX;
 
 struct ConstantPair {
 	int address;
@@ -111,6 +111,61 @@ const vector<u16> CHARACTER_ID_LIST = { 12, 10, 30, 35, 28, 1, 21, 7, 22, 44, 16
 const vector<string> CHARACTER_LIST = { "Bowser", "Captain Falcon", "Charizard", "Dedede", "Diddy Kong", "Donkey Kong", "Falco", "Fox", "Ganondorf", "Giga Bowser", "Ice Climbers", "Ike", "Ivysaur", "Jigglypuff", "Kirby", "Link", "Lucario", "Lucas", "Luigi", "Mario", "Marth", "Meta Knight", "Mewtwo", "Mr. Game and Watch", "Ness", "Olimar", "Peach", "Pikachu", "Pit", "R.O.B.", "Roy", "Samus", "Sheik", "Snake", "Sonic", "Sopo", "Squirtle", "Toon Link", "Wario", "Warioman", "Wolf", "Yoshi", "Zelda", "Zero Suit Samus" };
 const vector<u16> CHARACTER_ID_LIST = { 12, 10, 30, 35, 28, 1, 21, 7, 22, 44, 16, 37, 34, 39, 6, 2, 36, 27, 9, 0, 19, 24, 51, 20, 11, 26, 13, 8, 25, 38, 50, 3, 15, 42, 43, 17, 32, 40, 23, 45, 41, 5, 14, 4 };
 #endif
+
+const std::vector<std::string> ROSTER_LIST = { "Brawl", "Project+"};
+const std::vector<std::vector<unsigned char>> ROSTER_CHAR_ID_LISTS = {
+	{	// Brawl Roster Character List
+		0x00, 0x01, 0x02, 0x03, 0x06, 0x07, 0x08,
+		0x11, 0x12, 0x09, 0x1A, 0x0E, 0x17, 0x16,
+		0x13, 0x1B, 0x21, 0x26, 0x0D, 0x05, 0x14,
+		0x10, 0x1F, 0x25, 0x20, 0x0B, 0x27, 0x0C,
+		0x15, 0x24, 0x22, 0x18, 0x0A, 0x23, 0x19, 0x29
+	},
+	{	// Project+ Roster Character List
+		0x00, 0x09, 0x0D, 0x15, 0x05, 0x0C, 0x01, 0x1A,
+		0x0A, 0x07, 0x13, 0x25, 0x02, 0x24, 0x0E, 0x0F,
+		0x14, 0x08, 0x23, 0x2E, 0x2B, 0x2C, 0x2A, 0x20,
+		0x03, 0x04, 0x0B, 0x19, 0x06, 0x16, 0x1F, 0x11,
+		0x2D, 0x21, 0x12, 0x22, 0x10, 0x17, 0x29, 0x18,
+		0x26, 0x27, 0x30
+	},
+};
+const std::vector<std::vector<unsigned char>> ROSTER_RAND_ID_LISTS = {
+	{	// Brawl Roster Random List
+		0x00, 0x01, 0x02, 0x03, 0x06, 0x07, 0x08,
+		0x11, 0x12, 0x09, 0x1A, 0x0E, 0x17, 0x16,
+		0x13, 0x1B, 0x21, 0x26, 0x0D, 0x05, 0x14,
+		0x10, 0x1F, 0x25, 0x20, 0x0B, 0x27, 0x0C,
+		0x15, 0x24, 0x22, 0x18, 0x0A, 0x23, 0x19
+	},
+	{	// Project+ Roster Random List
+		0x15, 0x00, 0x09, 0x0D, 0x0C, 0x05, 0x01, 0x1A,
+		0x0A, 0x25, 0x07, 0x13, 0x10, 0x0E, 0x0F, 0x02,
+		0x24, 0x14, 0x2E, 0x20, 0x08, 0x23, 0x2B, 0x2C,
+		0x2A, 0x03, 0x04, 0x19, 0x0B, 0x17, 0x06, 0x16,
+		0x1F, 0x21, 0x11, 0x2D, 0x18, 0x22, 0x12, 0x26,
+		0x27, 0x30
+	},
+};
+const std::vector<std::vector<std::pair<unsigned char, unsigned char>>> ROSTER_L_LOAD_PAIRS =
+{
+	// Brawl Roster L-Loads
+	{
+		{0x03, 0x04}, // Samus		->		Zero Suit Samus
+		{0x11, 0x2D}, // Marth		->		Roy
+		{0x0C, 0x38}, // Bowser		->		Giga
+		{0x10, 0x37}, // ICs		->		SoPo
+		{0x15, 0x36}, // Wario		->		Warioman
+		{0x20, 0x2E}, // Lucario	->		Mewtwo
+		{0x27, 0x30}, // Sonic		->		Knuckles
+	},
+	// P+ Roster L-Loads
+	{
+		{0x0C, 0x38}, // Bowser		->		Giga
+		{0x10, 0x37}, // ICs		->		SoPo
+		{0x15, 0x36}, // Wario		->		Warioman
+	},
+};
 
 
 
@@ -209,11 +264,11 @@ static const int ALC_P2_LOC = ALC_P1_LOC + 4; //4
 static const int ALC_P3_LOC = ALC_P2_LOC + 4; //4
 static const int ALC_P4_LOC = ALC_P3_LOC + 4; //4
 
-static const int CSS_VER_LOC = ALC_P4_LOC + 4; //4
+static const int DRAW_SETTINGS_BUFFER_LOC = ALC_P4_LOC + 4; //0x200
 
-static const int DRAW_SETTINGS_BUFFER_LOC = CSS_VER_LOC + 4; //0x200
+static const int CSS_VER_LOC = DRAW_SETTINGS_BUFFER_LOC + 0x200; //4
 
-static const int START_OF_CODE_MENU = DRAW_SETTINGS_BUFFER_LOC + 0x200;
+static const int START_OF_CODE_MENU = CSS_VER_LOC + 0x04;
 
 static int CurrentOffset = START_OF_CODE_MENU;
 

@@ -58,12 +58,12 @@ int TAG_COSTUME_TOGGLE_INDEX = -1;
 int CROWD_CHEER_TOGGLE_INDEX = -1;
 int STALING_TOGGLE_INDEX = -1;
 int STAGELIST_INDEX = -1;
+int CSS_VERSION_SETTING_INDEX = -1;
 int ALL_CHARS_WALLJUMP_INDEX = -1;
 int ALC_P1_INDEX = -1;
 int ALC_P2_INDEX = -1;
 int ALC_P3_INDEX = -1;
 int ALC_P4_INDEX = -1;
-int CSS_VERSION_SETTING_INDEX = -1;
 int EXTERNAL_INDEX = -1;	//Used for codes that use others for context
 
 //constant overrides
@@ -297,8 +297,13 @@ void CodeMenu()
 	MainLines.push_back(new Selection("Stagelist", { "Brawl", "Project+" }, 0, STAGELIST_INDEX));
 #endif
 	constantOverrides.emplace_back(0x80523400, STAGELIST_INDEX);
-	MainLines.push_back(new Selection("CSS Roster Version", { "Brawl", "Project+"}, 0, CSS_VERSION_SETTING_INDEX));
-	constantOverrides.emplace_back(0x800017B4, CSS_VERSION_SETTING_INDEX);
+
+	// Only include the Roster Line if there's more than one to choose between.
+	if (ROSTER_LIST.size() > 1) 
+	{
+		MainLines.push_back(new Selection("CSS Roster Version", ROSTER_LIST, 0, CSS_VERSION_SETTING_INDEX));
+	}
+
 	//	MainLines.push_back(new Selection("Endless Friendlies", { "OFF", "Same Stage", "Random Stage", "Round Robin" }, 0, INFINITE_FRIENDLIES_INDEX));
 	//	MainLines.push_back(new Selection("Endless Friendlies Mode", { "OFF", "All Stay", "Winner Stays", "Loser Stays", "Rotation"}, 0, ENDLESS_FRIENDLIES_MODE_INDEX));
 	MainLines.push_back(new Selection("Endless Friendlies", { "OFF", "ON", "ON (1v1)"}, 0, ENDLESS_FRIENDLIES_MODE_INDEX));
@@ -859,9 +864,6 @@ void CreateMenu(Page MainPage)
 	AddValueToByteArray(ALC_P4_INDEX, Header);
 	//
 
-	// CSS VER Modifier
-	AddValueToByteArray(CSS_VERSION_SETTING_INDEX, Header);
-
 	//draw settings buffer
 	vector<u32> DSB(0x200 / 4, 0);
 	DSB[0x4 / 4] = 0xFFFFFFFF;
@@ -875,6 +877,9 @@ void CreateMenu(Page MainPage)
 	for (auto x : DSB) {
 		AddValueToByteArray(x, Header);
 	}
+
+	// CSS VER Modifier
+	AddValueToByteArray(CSS_VERSION_SETTING_INDEX, Header);
 
 	if (START_OF_CODE_MENU - START_OF_CODE_MENU_HEADER != Header.size()) {
 		cout << "Messed up header\n";

@@ -15,6 +15,7 @@
 #include "IkeClimbers.h"
 #include "AIDisplay.h"
 #include "C++Injection.h"
+#include "_CSSRosterChange.h"
 //#include "FPS Display.h"
 using namespace std;
 
@@ -58,7 +59,7 @@ int main()
 
 	//LXPGreenOverlayFix();
 
-	CodeMenu(); tagBasedCostumes();
+	CodeMenu(); tagBasedCostumes(); cssRosterChange();
 
 	//musicPercentCode();
 

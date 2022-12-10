@@ -334,7 +334,7 @@ static string scriptsPath = ReadConfigFile(3);
 #if DOLPHIN_BUILD
 static fstream MenuFile(buildPath + "pf/menu3/dnet.cmnu", fstream::out | fstream::binary);
 #else
-static fstream MenuFile(buildPath + "data.cmnu", fstream::out | fstream::binary);
+static fstream MenuFile(buildPath + "pf/menu3/data.cmnu", fstream::out | fstream::binary);
 #endif
 
 class Page;

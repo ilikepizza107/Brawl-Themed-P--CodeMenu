@@ -16,6 +16,7 @@
 #include "AIDisplay.h"
 #include "C++Injection.h"
 #include "_CSSRosterChange.h"
+#include "_DashAttackItemGrab.h"
 //#include "FPS Display.h"
 using namespace std;
 
@@ -59,7 +60,7 @@ int main()
 
 	//LXPGreenOverlayFix();
 
-	CodeMenu(); tagBasedCostumes(); cssRosterChange();
+	CodeMenu(); tagBasedCostumes(); cssRosterChange(); dashAttackItemGrab();
 
 	//musicPercentCode();
 

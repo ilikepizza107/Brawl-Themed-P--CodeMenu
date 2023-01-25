@@ -58,12 +58,13 @@ int TAG_COSTUME_TOGGLE_INDEX = -1;
 int CROWD_CHEER_TOGGLE_INDEX = -1;
 int STALING_TOGGLE_INDEX = -1;
 int STAGELIST_INDEX = -1;
-int CSS_VERSION_SETTING_INDEX = -1;
 int ALL_CHARS_WALLJUMP_INDEX = -1;
 int ALC_P1_INDEX = -1;
 int ALC_P2_INDEX = -1;
 int ALC_P3_INDEX = -1;
 int ALC_P4_INDEX = -1;
+int CSS_VERSION_SETTING_INDEX = -1;
+int DASH_ATTACK_ITEM_GRAB_INDEX = -1;
 int EXTERNAL_INDEX = -1;	//Used for codes that use others for context
 
 //constant overrides
@@ -257,6 +258,7 @@ void CodeMenu()
 	constantOverrides.emplace_back(0x80B88420, WALLJUMP_HORIZONTAL_MULTIPLIER_INDEX);
 	GameplayConstantsLines.push_back(new Floating("Wall Bounce Knockback Multiplier", -1, 5, 0.80, .05, WALL_BOUNCE_KNOCKBACK_MULTIPLIER_INDEX, "%.2fx"));
 	constantOverrides.emplace_back(0x80B88510, WALL_BOUNCE_KNOCKBACK_MULTIPLIER_INDEX);
+	GameplayConstantsLines.push_back(new Selection("Dash Attack Item Grab Toggle", { "OFF", "ON" }, 0, DASH_ATTACK_ITEM_GRAB_INDEX));
 
 	Page GameplayConstantsPage("Gameplay Modifiers", GameplayConstantsLines);
 
@@ -862,7 +864,12 @@ void CreateMenu(Page MainPage)
 	AddValueToByteArray(ALC_P2_INDEX, Header);
 	AddValueToByteArray(ALC_P3_INDEX, Header);
 	AddValueToByteArray(ALC_P4_INDEX, Header);
-	//
+
+	// CSS VER Modifier
+	AddValueToByteArray(CSS_VERSION_SETTING_INDEX, Header);
+
+	// Dash-Attack Item Grab Toggle
+	AddValueToByteArray(DASH_ATTACK_ITEM_GRAB_INDEX, Header);
 
 	//draw settings buffer
 	vector<u32> DSB(0x200 / 4, 0);
@@ -877,9 +884,6 @@ void CreateMenu(Page MainPage)
 	for (auto x : DSB) {
 		AddValueToByteArray(x, Header);
 	}
-
-	// CSS VER Modifier
-	AddValueToByteArray(CSS_VERSION_SETTING_INDEX, Header);
 
 	if (START_OF_CODE_MENU - START_OF_CODE_MENU_HEADER != Header.size()) {
 		cout << "Messed up header\n";

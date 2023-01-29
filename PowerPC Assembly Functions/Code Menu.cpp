@@ -65,6 +65,9 @@ int ALC_P3_INDEX = -1;
 int ALC_P4_INDEX = -1;
 int CSS_VERSION_SETTING_INDEX = -1;
 int DASH_ATTACK_ITEM_GRAB_INDEX = -1;
+int TRIP_TOGGLE_INDEX = -1;
+int TRIP_RATE_MULTIPLIER_INDEX = -1;
+int TRIP_INTERVAL_INDEX = -1;
 int EXTERNAL_INDEX = -1;	//Used for codes that use others for context
 
 //constant overrides
@@ -259,6 +262,10 @@ void CodeMenu()
 	GameplayConstantsLines.push_back(new Floating("Wall Bounce Knockback Multiplier", -1, 5, 0.80, .05, WALL_BOUNCE_KNOCKBACK_MULTIPLIER_INDEX, "%.2fx"));
 	constantOverrides.emplace_back(0x80B88510, WALL_BOUNCE_KNOCKBACK_MULTIPLIER_INDEX);
 	GameplayConstantsLines.push_back(new Selection("Dash Attack Item Grab Toggle", { "OFF", "ON" }, 0, DASH_ATTACK_ITEM_GRAB_INDEX));
+	GameplayConstantsLines.push_back(new Selection("Tripping Toggle", { "OFF", "ON" }, 0, TRIP_TOGGLE_INDEX));
+	GameplayConstantsLines.push_back(new Floating("Tripping Rate", 0, 100, 1.0, 1.0, TRIP_RATE_MULTIPLIER_INDEX, "%.2f%"));
+	GameplayConstantsLines.push_back(new Selection("Tripping Cooldown Toggle", { "ON", "OFF" }, 0, TRIP_INTERVAL_INDEX));
+
 
 	Page GameplayConstantsPage("Gameplay Modifiers", GameplayConstantsLines);
 
@@ -879,6 +886,13 @@ void CreateMenu(Page MainPage)
 
 	// Dash-Attack Item Grab Toggle
 	AddValueToByteArray(DASH_ATTACK_ITEM_GRAB_INDEX, Header);
+
+	// Tripping Toggle
+	AddValueToByteArray(TRIP_TOGGLE_INDEX, Header);
+	// Tripping Rate Multiplier
+	AddValueToByteArray(TRIP_RATE_MULTIPLIER_INDEX, Header);
+	// Tripping Cooldown
+	AddValueToByteArray(TRIP_INTERVAL_INDEX, Header);
 
 	//draw settings buffer
 	vector<u32> DSB(0x200 / 4, 0);

@@ -65,6 +65,9 @@ extern int ALC_P3_INDEX;
 extern int ALC_P4_INDEX;
 extern int CSS_VERSION_SETTING_INDEX;
 extern int DASH_ATTACK_ITEM_GRAB_INDEX;
+extern int TRIP_TOGGLE_INDEX;
+extern int TRIP_RATE_MULTIPLIER_INDEX;
+extern int TRIP_INTERVAL_INDEX;
 
 struct ConstantPair {
 	int address;
@@ -267,8 +270,11 @@ static const int ALC_P4_LOC = ALC_P3_LOC + 4; //4
 
 static const int CSS_VER_LOC = ALC_P4_LOC + 0x04; //4
 static const int DASH_ATTACK_ITEM_GRAB_LOC = CSS_VER_LOC + 0x04; //4
+static const int TRIP_TOGGLE_LOC = DASH_ATTACK_ITEM_GRAB_LOC + 0x04; //4
+static const int TRIP_RATE_MULTIPLIER_LOC = TRIP_TOGGLE_LOC + 0x04; //4
+static const int TRIP_INTERVAL_LOC = TRIP_RATE_MULTIPLIER_LOC + 0x04; //4
 
-static const int DRAW_SETTINGS_BUFFER_LOC = DASH_ATTACK_ITEM_GRAB_LOC + 0x04; //0x200
+static const int DRAW_SETTINGS_BUFFER_LOC = TRIP_INTERVAL_LOC + 0x04; //0x200
 
 static const int START_OF_CODE_MENU = DRAW_SETTINGS_BUFFER_LOC + 0x200;
 

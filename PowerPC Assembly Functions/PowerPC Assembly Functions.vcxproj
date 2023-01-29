@@ -188,6 +188,7 @@
     <ClInclude Include="_CSSRosterChange.h" />
     <ClInclude Include="_DashAttackItemGrab.h" />
     <ClInclude Include="_lavaBytes.h" />
+    <ClInclude Include="_TripRateModifier.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AIDisplay.cpp" />
@@ -217,6 +218,7 @@
     <ClCompile Include="_CSSRosterChange.cpp" />
     <ClCompile Include="_DashAttackItemGrab.cpp" />
     <ClCompile Include="_lavaBytes.cpp" />
+    <ClCompile Include="_TripRateModifier.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

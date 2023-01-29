@@ -10,10 +10,9 @@ void dashAttackItemGrab()
 
 		constexpr unsigned long dashAttackItemGrabRamWriteLoc = 0x80FB240C;
 
-
 		ASMStart(0x808e0094); // Hooks "getPowerMul/[ftLogPatternModule]/ft_pattern_log.o" (same as the Staling Toggle Code).
 		SetRegister(reg1, DASH_ATTACK_ITEM_GRAB_INDEX); // Load the location of the toggle's line.
-		LWZ(reg2, reg1, Line::VALUE); // Then Look 0x08 past that address to get the selected index of the CSS Roster Line
+		LWZ(reg2, reg1, Line::VALUE); // Then Look 0x08 past that address to get the current state of the toggle.
 
 		// Load the address we'll be writing to.
 		SetRegister(reg1, dashAttackItemGrabRamWriteLoc);

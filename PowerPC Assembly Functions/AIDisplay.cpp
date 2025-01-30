@@ -27,7 +27,7 @@ void makeBuffer() {
 }
 
 void AIDisplay() {
-	ASMStart(0x8001792c);
+	ASMStart(0x8001792c, "[CM: AI Display] AI Display");
 	SaveRegisters(15);
 
 	int reg1 = 31;

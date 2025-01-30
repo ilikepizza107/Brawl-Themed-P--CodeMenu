@@ -57,18 +57,38 @@ int P4_TAG_STRING_INDEX = -1;
 int TAG_COSTUME_TOGGLE_INDEX = -1;
 int CROWD_CHEER_TOGGLE_INDEX = -1;
 int STALING_TOGGLE_INDEX = -1;
-int STAGELIST_INDEX = -1;
-int ALL_CHARS_WALLJUMP_INDEX = -1;
 int ALC_P1_INDEX = -1;
 int ALC_P2_INDEX = -1;
 int ALC_P3_INDEX = -1;
 int ALC_P4_INDEX = -1;
+int ALC_P1_FLASH_RED_INDEX = -1;
+int ALC_P2_FLASH_RED_INDEX = -1;
+int ALC_P3_FLASH_RED_INDEX = -1;
+int ALC_P4_FLASH_RED_INDEX = -1;
+int BIG_HEAD_INDEX = -1;
+int RANDOM_ANGLE_INDEX = -1;
+int WAR_MODE_INDEX = -1;
+int BUFFER_P1_INDEX = -1;
+int BUFFER_P2_INDEX = -1;
+int BUFFER_P3_INDEX = -1;
+int BUFFER_P4_INDEX = -1;
+int SCALE_INDEX = -1;
+int SPEED_INDEX = -1;
 int CSS_VERSION_SETTING_INDEX = -1;
+int THEME_SETTING_INDEX = -1;
 int DASH_ATTACK_ITEM_GRAB_INDEX = -1;
 int TRIP_TOGGLE_INDEX = -1;
 int TRIP_RATE_MULTIPLIER_INDEX = -1;
 int TRIP_INTERVAL_INDEX = -1;
-int EXTERNAL_INDEX = -1;	//Used for codes that use others for context
+int PSCC_COLOR_1_INDEX = -1;
+int PSCC_COLOR_2_INDEX = -1;
+int PSCC_COLOR_3_INDEX = -1;
+int PSCC_COLOR_4_INDEX = -1;
+int JUMPSQUAT_OVERRIDE_TOGGLE_INDEX = -1;
+int JUMPSQUAT_OVERRIDE_FRAMES_INDEX = -1;
+int JUMPSQUAT_OVERRIDE_MIN_INDEX = -1;
+int JUMPSQUAT_OVERRIDE_MAX_INDEX = -1;
+int EXTERNAL_INDEX = -1;	//Used for GCTRM codes that use other indexs for context
 
 //constant overrides
 vector<ConstantPair> constantOverrides;
@@ -87,31 +107,825 @@ int SHIELD_TILT_MULTIPLIER_INDEX = -1;
 int KNOCKBACK_DECAY_MULTIPLIER_INDEX = -1;
 int WALL_BOUNCE_KNOCKBACK_MULTIPLIER_INDEX = -1;
 
+vector<string> CHARACTER_LIST{};
+vector<u16> CHARACTER_ID_LIST{};
+void buildCharacterIDLists()
+{
+	std::map<std::string, u16> characterNameToIDMap{};
+	if (characterListVersion >= characterListVersions::clv_vBRAWL)
+	{
+		characterNameToIDMap.emplace("Bowser", LCSI_BOWSER);
+		characterNameToIDMap.emplace("Captain Falcon", LCSI_CAPTAIN_FALCON);
+		characterNameToIDMap.emplace("Charizard", LCSI_CHARIZARD);
+		characterNameToIDMap.emplace("Dedede", LCSI_DEDEDE);
+		characterNameToIDMap.emplace("Diddy Kong", LCSI_DIDDY_KONG);
+		characterNameToIDMap.emplace("Donkey Kong", LCSI_DONKEY_KONG);
+		characterNameToIDMap.emplace("Falco", LCSI_FALCO);
+		characterNameToIDMap.emplace("Fox", LCSI_FOX);
+		characterNameToIDMap.emplace("Ganondorf", LCSI_GANONDORF);
+		characterNameToIDMap.emplace("Ice Climbers", LCSI_ICE_CLIMBERS);
+		characterNameToIDMap.emplace("Ike", LCSI_IKE);
+		characterNameToIDMap.emplace("Ivysaur", LCSI_IVYSAUR);
+		characterNameToIDMap.emplace("Jigglypuff", LCSI_JIGGLYPUFF);
+		characterNameToIDMap.emplace("Kirby", LCSI_KIRBY);
+		characterNameToIDMap.emplace("Link", LCSI_LINK);
+		characterNameToIDMap.emplace("Lucario", LCSI_LUCARIO);
+		characterNameToIDMap.emplace("Lucas", LCSI_LUCAS);
+		characterNameToIDMap.emplace("Luigi", LCSI_LUIGI);
+		characterNameToIDMap.emplace("Mario", LCSI_MARIO);
+		characterNameToIDMap.emplace("Marth", LCSI_MARTH);
+		characterNameToIDMap.emplace("Meta Knight", LCSI_META_KNIGHT);
+		characterNameToIDMap.emplace("Mr. Game and Watch", LCSI_MR_GAME_AND_WATCH);
+		characterNameToIDMap.emplace("Ness", LCSI_NESS);
+		characterNameToIDMap.emplace("Olimar", LCSI_OLIMAR);
+		characterNameToIDMap.emplace("Peach", LCSI_PEACH);
+		characterNameToIDMap.emplace("Pikachu", LCSI_PIKACHU);
+		characterNameToIDMap.emplace("Pit", LCSI_PIT);
+		characterNameToIDMap.emplace("R.O.B.", LCSI_ROB);
+		characterNameToIDMap.emplace("Samus", LCSI_SAMUS);
+		characterNameToIDMap.emplace("Sheik", LCSI_SHEIK);
+		characterNameToIDMap.emplace("Snake", LCSI_SNAKE);
+		characterNameToIDMap.emplace("Sonic", LCSI_SONIC);
+		characterNameToIDMap.emplace("Squirtle", LCSI_SQUIRTLE);
+		characterNameToIDMap.emplace("Toon Link", LCSI_TOON_LINK);
+		characterNameToIDMap.emplace("Wario", LCSI_WARIO);
+		characterNameToIDMap.emplace("Wolf", LCSI_WOLF);
+		characterNameToIDMap.emplace("Yoshi", LCSI_YOSHI);
+		characterNameToIDMap.emplace("Zelda", LCSI_ZELDA);
+		characterNameToIDMap.emplace("Zero Suit Samus", LCSI_ZERO_SUIT_SAMUS);
+	}
+	if (characterListVersion >= characterListVersions::clv_vBRAWL_SPECIAL_CHARS)
+	{
+		characterNameToIDMap.emplace("Giga Bowser", LCSI_GIGA_BOWSER);
+		characterNameToIDMap.emplace("Sopo", LCSI_SOPO);
+		characterNameToIDMap.emplace("Warioman", LCSI_WARIOMAN);
+	}
+	if (characterListVersion >= characterListVersions::clv_PROJECTM)
+	{
+		characterNameToIDMap.emplace("Mewtwo", LCSI_MEWTWO);
+		characterNameToIDMap.emplace("Roy", LCSI_ROY);
+	}
+	if (characterListVersion >= characterListVersions::clv_PPLUS)
+	{
+		characterNameToIDMap.emplace("Knuckles", LCSI_KNUCKLES);
+	}
+	if (characterListVersion >= characterListVersions::clv_PPEX_RIDLEY)
+	{
+		characterNameToIDMap.emplace("Ridley", LCSI_RIDLEY);
+	}
+	if (characterListVersion >= characterListVersions::clv_PPEX_WALUIGI)
+	{
+		characterNameToIDMap.emplace("Waluigi", LCSI_WALUIGI);
+	}
+	if (characterListVersion >= characterListVersions::clv_PPEX_ALLOYS)
+	{
+		characterNameToIDMap.emplace("Red Alloy", LCSI_ALLOY_RED);
+		characterNameToIDMap.emplace("Blue Alloy", LCSI_ALLOY_BLUE);
+		characterNameToIDMap.emplace("Yellow Alloy", LCSI_ALLOY_YELLOW);
+		characterNameToIDMap.emplace("Green Alloy", LCSI_ALLOY_GREEN);
+	}
+	if (characterListVersion >= characterListVersions::clv_PPEX_DARK_SAMUS)
+	{
+		characterNameToIDMap.emplace("Dark Samus", LCSI_DARK_SAMUS);
+	}
+	if (characterListVersion >= characterListVersions::clv_PPEX_SCEPTILE)
+	{
+		characterNameToIDMap.emplace("Sceptile", LCSI_SCEPTILE);
+	}
 
-int SHIELD_RED_1 = -1;
-int SHIELD_GREEN_1 = -1;
-int SHIELD_BLUE_1 = -1;
-int SHIELD_ALPHA_1 = -1;
-int SHIELD_RED_2 = -1;
-int SHIELD_GREEN_2 = -1;
-int SHIELD_BLUE_2 = -1;
-int SHIELD_ALPHA_2 = -1;
-int SHIELD_RED_3 = -1;
-int SHIELD_GREEN_3 = -1;
-int SHIELD_BLUE_3 = -1;
-int SHIELD_ALPHA_3 = -1;
-int SHIELD_RED_4 = -1;
-int SHIELD_GREEN_4 = -1;
-int SHIELD_BLUE_4 = -1;
-int SHIELD_ALPHA_4 = -1;
+	unzipMapToVectors(characterNameToIDMap, CHARACTER_LIST, CHARACTER_ID_LIST);
+}
+bool applyCharacterListVersion(unsigned long targetVersion)
+{
+	bool result = 0;
 
-int tets = 0x935fe30C;
+	// If the targeted version is valid...
+	if (targetVersion < characterListVersions::__clv_Count)
+	{
+		// ... replace the recorded list version...
+		characterListVersion = targetVersion;
+		// ... and rebuild the character lists.
+		buildCharacterIDLists();
+		result = 1;
+	}
+
+	return result;
+}
+
+vector<string> ROSTER_LIST{};
+vector<string> ROSTER_FILENAME_LIST{};
+void buildRosterLists()
+{
+	std::map<std::string, std::string> rosterNameToFileIDMap =
+	{
+		{"Default", "CSSRoster.dat"}
+	};
+
+	unzipMapToVectors(rosterNameToFileIDMap, ROSTER_LIST, ROSTER_FILENAME_LIST);
+}
+
+namespace themeConstants
+{
+	std::array<std::string, tpi__PATH_COUNT> filenames{};
+}
+void initializeThemeConstants()
+{
+	themeConstants::filenames.fill("");
+	themeConstants::filenames[themeConstants::tpi_MENUMAIN] = "mu_menumain.pac";
+	themeConstants::filenames[themeConstants::tpi_SELCHAR] = "sc_selcharacter.pac";
+	themeConstants::filenames[themeConstants::tpi_SELCHAR2] = "sc_selcharacter2.pac";
+	themeConstants::filenames[themeConstants::tpi_SELMAP] = "sc_selmap.pac";
+	themeConstants::filenames[themeConstants::tpi_SELEVENT] = "sc_sel_event.pac";
+	themeConstants::filenames[themeConstants::tpi_TITLE] = "sc_title.pac";
+}
+menuTheme::menuTheme(std::string name)
+{
+	prefixes[themeConstants::tpi_MENUMAIN] = getThemeFileDefaultPrefix(themeConstants::tpi_MENUMAIN);
+	prefixes[themeConstants::tpi_SELCHAR] = getThemeFileDefaultPrefix(themeConstants::tpi_SELCHAR);
+	prefixes[themeConstants::tpi_SELCHAR2] = getThemeFileDefaultPrefix(themeConstants::tpi_SELCHAR2);
+	prefixes[themeConstants::tpi_SELMAP] = getThemeFileDefaultPrefix(themeConstants::tpi_SELMAP);
+	prefixes[themeConstants::tpi_SELEVENT] = getThemeFileDefaultPrefix(themeConstants::tpi_SELEVENT);
+	prefixes[themeConstants::tpi_TITLE] = getThemeFileDefaultPrefix(themeConstants::tpi_TITLE);
+}
+void buildThemeLists()
+{
+	initializeThemeConstants();
+	std::map<std::string, menuTheme> themeNameToThemeSpecMap =
+	{
+		{"Default", menuTheme("Default")},
+	};
+	unzipMapToVectors(themeNameToThemeSpecMap, THEME_LIST, THEME_SPEC_LIST);
+}
+std::string getThemeFileBaseName(themeConstants::themePathIndices fileIndex)
+{
+	return themeConstants::filenames[fileIndex].substr(themeConstants::prefixLength, std::string::npos);
+}
+std::string getThemeFileDefaultPrefix(themeConstants::themePathIndices fileIndex)
+{
+	return themeConstants::filenames[fileIndex].substr(0, themeConstants::prefixLength);
+}
+std::vector<string> THEME_LIST;
+std::vector<menuTheme> THEME_SPEC_LIST{};
+std::array<bool, themeConstants::tpi__PATH_COUNT> THEME_FILE_GOT_UNIQUE_PREFIX{};
+
+namespace pscc
+{
+	namespace psccConstants
+	{
+		const std::string predefStr = "pd_";
+		const std::string menuSuffStr = "_m";
+		const std::string ingameSuffStr = "_ig";
+		const std::string secSuffStr = "_2";
+
+		const std::string SchemeNameP1 = "P1";
+		const std::string SchemeNameP2 = "P2";
+		const std::string SchemeNameP3 = "P3";
+		const std::string SchemeNameP4 = "P4";
+		const std::string SchemeNameRGB = "RGB";
+
+		const std::string ColNameP1_M = predefStr + SchemeNameP1 + menuSuffStr;
+		const std::string ColNameP1_M2 = predefStr + SchemeNameP1 + menuSuffStr + secSuffStr;
+		const std::string ColNameP1_IG = predefStr + SchemeNameP1 + ingameSuffStr;
+		const std::string ColNameP1_IG2 = predefStr + SchemeNameP1 + ingameSuffStr + secSuffStr;
+		const std::string ColNameP2_M = predefStr + SchemeNameP2 + menuSuffStr;
+		const std::string ColNameP2_M2 = predefStr + SchemeNameP2 + menuSuffStr + secSuffStr;
+		const std::string ColNameP2_IG = predefStr + SchemeNameP2 + ingameSuffStr;
+		const std::string ColNameP2_IG2 = predefStr + SchemeNameP2 + ingameSuffStr + secSuffStr;
+		const std::string ColNameP3_M = predefStr + SchemeNameP3 + menuSuffStr;
+		const std::string ColNameP3_M2 = predefStr + SchemeNameP3 + menuSuffStr + secSuffStr;
+		const std::string ColNameP3_IG = predefStr + SchemeNameP3 + ingameSuffStr;
+		const std::string ColNameP3_IG2 = predefStr + SchemeNameP3 + ingameSuffStr + secSuffStr;
+		const std::string ColNameP4_M = predefStr + SchemeNameP4 + menuSuffStr;
+		const std::string ColNameP4_M2 = predefStr + SchemeNameP4 + menuSuffStr + secSuffStr;
+		const std::string ColNameP4_IG = predefStr + SchemeNameP4 + ingameSuffStr;
+		const std::string ColNameP4_IG2 = predefStr + SchemeNameP4 + ingameSuffStr + secSuffStr;
+		const std::string ColNameRGB = predefStr + SchemeNameRGB;
+	}
+
+	bool color::colorValid() const
+	{
+		return (hue != FLT_MAX) && (saturation != FLT_MAX) && (luminance != FLT_MAX);
+	}
+
+	std::map<std::string, color> colorTable =
+	{
+		{psccConstants::ColNameP1_M,	{0.015f, 0.95f,  0.48f}},
+		{psccConstants::ColNameP2_M,	{3.900f, 0.75f,  0.48f}},
+		{psccConstants::ColNameP2_M2,	{3.700f, 0.90f,  0.50f}},
+		{psccConstants::ColNameP2_IG2,	{3.450f, 1.00f,  0.40f}},
+		{psccConstants::ColNameP3_M,	{0.840f, 1.00f,  0.50f}},
+		{psccConstants::ColNameP3_IG,	{0.900f, 0.60f,  0.45f, pscc::color::fb_DISABLE_HUE_MOD}},
+		{psccConstants::ColNameP4_M,	{2.135f, 0.86f,  0.32f, pscc::color::fb_DISABLE_HUE_MOD}},
+		{psccConstants::ColNameRGB,     {0.000f, 1.00f,  0.50f, pscc::color::fb_DISABLE_HUE_MOD, 0}},
+	};
+	std::size_t getColorTableSizeInBytes()
+	{
+		return (colorTable.size() * colorTableEntrySizeInBytes);
+	}
+
+	colorScheme::colorScheme(std::string nameIn)
+	{
+		name = nameIn;
+		colors.fill("");
+	}
+	void colorScheme::downfillEmptySlots()
+	{
+		if (!colors[colorSchemeColorSlots::cscs_MENU1].empty())
+		{
+			std::string defaultColor = colors[colorSchemeColorSlots::cscs_MENU1];
+			for (std::size_t i = colorSchemeColorSlots::cscs_MENU1 + 1; i < colorSchemeColorSlots::cscs__COUNT; i++)
+			{
+				if (colors[i].empty())
+				{
+					colors[i] = defaultColor;
+				}
+				else
+				{
+					defaultColor = colors[i];
+				}
+			}
+		}
+	}
+	bool colorScheme::schemeValid() const
+	{
+		bool result = 1;
+
+		for (auto i : colors)
+		{
+			result &= (pscc::colorTable.find(i) != pscc::colorTable.end());
+		}
+
+		return result;
+	}
+	colorSchemeTable::colorSchemeTable()
+	{
+		entries.resize(schemePredefIDs::spi__COUNT, colorScheme());
+		colorScheme* currCol = nullptr;
+
+		currCol = &entries[schemePredefIDs::spi_P1];
+		currCol->name = psccConstants::SchemeNameP1;
+		currCol->colors[colorSchemeColorSlots::cscs_MENU1] = psccConstants::ColNameP1_M;
+		currCol->colors[colorSchemeColorSlots::cscs_MENU2] = psccConstants::ColNameP1_M;
+		currCol->colors[colorSchemeColorSlots::cscs_INGAME1] = psccConstants::ColNameP1_M;
+		currCol->colors[colorSchemeColorSlots::cscs_INGAME2] = psccConstants::ColNameP1_M;
+
+		currCol = &entries[schemePredefIDs::spi_P2];
+		currCol->name = psccConstants::SchemeNameP2;
+		currCol->colors[colorSchemeColorSlots::cscs_MENU1] = psccConstants::ColNameP2_M;
+		currCol->colors[colorSchemeColorSlots::cscs_MENU2] = psccConstants::ColNameP2_M2;
+		currCol->colors[colorSchemeColorSlots::cscs_INGAME1] = psccConstants::ColNameP2_M2;
+		currCol->colors[colorSchemeColorSlots::cscs_INGAME2] = psccConstants::ColNameP2_IG2;
+
+		currCol = &entries[schemePredefIDs::spi_P3];
+		currCol->name = psccConstants::SchemeNameP3;
+		currCol->colors[colorSchemeColorSlots::cscs_MENU1] = psccConstants::ColNameP3_M;
+		currCol->colors[colorSchemeColorSlots::cscs_MENU2] = psccConstants::ColNameP3_M;
+		currCol->colors[colorSchemeColorSlots::cscs_INGAME1] = psccConstants::ColNameP3_IG;
+		currCol->colors[colorSchemeColorSlots::cscs_INGAME2] = psccConstants::ColNameP3_IG;
+
+		currCol = &entries[schemePredefIDs::spi_P4];
+		currCol->name = psccConstants::SchemeNameP4;
+		currCol->colors[colorSchemeColorSlots::cscs_MENU1] = psccConstants::ColNameP4_M;
+		currCol->colors[colorSchemeColorSlots::cscs_MENU2] = psccConstants::ColNameP4_M;
+		currCol->colors[colorSchemeColorSlots::cscs_INGAME1] = psccConstants::ColNameP4_M;
+		currCol->colors[colorSchemeColorSlots::cscs_INGAME2] = psccConstants::ColNameP4_M;
+	}
+	std::size_t colorSchemeTable::tableSizeInBytes() const
+	{
+		return (entries.size() * schemeTableEntrySizeInBytes);
+	}
+	std::vector<unsigned char> colorSchemeTable::tableToByteVec() const
+	{
+		std::vector<unsigned char> result(tableSizeInBytes(), 0x00);
+		for (std::size_t i = 0, writeIdx = 0; i < entries.size(); i++)
+		{
+			for (auto u : entries[i].colors)
+			{
+				result[writeIdx++] = std::distance(colorTable.begin(), colorTable.find(u));
+			}
+		}
+		return result;
+	}
+	std::size_t getColorTableOffsetToColor(std::string colorName)
+	{
+		std::size_t result = SIZE_MAX;
+
+		auto findRes = colorTable.find(colorName);
+		if (findRes != colorTable.end())
+		{
+			result = std::distance(colorTable.begin(), findRes) * colorTableEntrySizeInBytes;
+		}
+
+		return result;
+	}
+
+	colorSchemeTable schemeTable;
+}
+
+
+#if PROJECT_PLUS_EX_BUILD
+const std::string menuConfigXMLFileName = "EX_Config.xml";
+#else
+const std::string menuConfigXMLFileName = "Config.xml";
+#endif
+const std::string netMenuConfigXMLFileName = "Net-" + menuConfigXMLFileName;
+const std::string addonInputFolderPath = "./Addons/";
+const std::string addonInputSourceFilename = "Source.asm";
+const std::string addonInputConfigFilename = "Definition.xml";
+const std::string addonAliasBankFilename = "AddonAliases.asm";
+const std::string addonOutputFolderName = "CM_Addons/";
+const std::string outputFolder = "./Code_Menu_Output/";
+const std::string symbolMapInputFileName = "symbols.map";
+const std::string buildFolder = ".././";
+const std::string GCTRMExePath = buildFolder + "GCTRealMate.exe";
+const std::string GCTRMCommandBase = "\"" + GCTRMExePath + "\" -g -l -q ";
+
+// !!Important Note on cmnuFileName and cmnuBuildLocationDirectory!!
+// These variables are also referenced in "Control Codes.cpp"'s "LoadCodeMenu" function,
+// in which they're directly used to determine where the game will look for the Code Menu.
+// For that reason, please make sure you properly define those variables, as failing
+// to do so will cause general weirdness (eg. invisible shields, skipping results screen, etc). 
+#if BUILD_TYPE == PROJECT_PLUS
+// Constant Confiuguration Block for Project+ Based Builds
+	#if BUILD_NETPLAY_FILES == true
+	const std::string changelogFileName = "Net-Code_Menu_Changelog.txt";
+	const std::string optionsFilename = "Net-Code_Menu_Options.xml";
+	const std::string mainGCTName = "NETPLAY";
+	const std::string boostGCTName = "NETBOOST";
+	const std::string asmFileName = "Net-CodeMenu.asm";
+	const std::string asmTextFileName = "Net-CodeMenu.txt";
+	const std::string cmnuFileName = "dnet.cmnu";
+	const std::vector<std::string> asmBuildLocationDirectories = { "Source/Netplay/" };
+	const std::string cmnuBuildLocationDirectory = "pf/menu3/";
+	#elif BUILD_NETPLAY_FILES == false
+	const std::string changelogFileName = "Code_Menu_Changelog.txt";
+	const std::string optionsFilename = "Code_Menu_Options.xml";
+	const std::string mainGCTName = "RSBE01";
+	const std::string boostGCTName = "BOOST";
+	const std::string asmFileName = "CodeMenu.asm";
+	const std::string asmTextFileName = "CodeMenu.txt";
+	const std::string cmnuFileName = "data.cmnu";
+	const std::vector<std::string> asmBuildLocationDirectories = { "Source/CodeMenu/", "Source/Project+/" };
+	const std::string cmnuBuildLocationDirectory = "pf/menu3/";
+	#endif
+#else
+// Default Constant Confiuguration Block (used currently by PMEX and LegacyXP)
+// Note: These builds don't use the more modern Source Folder based config, just RSBE01.gct
+//		As a result, the following constants are left blank on purpose, as they aren't used:
+//		- boostGCTName
+//		- asmFileName
+//		- asmTextFileName
+const std::string changelogFileName = "Code_Menu_Changelog.txt";
+const std::string optionsFilename = "Code_Menu_Options.xml";
+const std::string mainGCTName = "RSBE01";
+const std::string boostGCTName = "";
+const std::string asmFileName = "";
+const std::string asmTextFileName = "";
+const std::string cmnuFileName = "cm.bin";
+const std::vector<std::string> asmBuildLocationDirectories = {};
+const std::string cmnuBuildLocationDirectory = "./";
+#endif
+
+const std::string mainGCTFile = buildFolder + mainGCTName + ".GCT";
+const std::string mainGCTTextFile = buildFolder + mainGCTName + ".txt";
+const std::string boostGCTFile = buildFolder + boostGCTName + ".GCT";
+const std::string boostGCTTextFile = buildFolder + boostGCTName + ".txt";
+const std::string asmOutputFilePath = outputFolder + asmFileName;
+const std::string asmTextOutputFilePath = outputFolder + asmTextFileName;
+const std::string cmnuOutputFilePath = outputFolder + cmnuFileName;
+const std::string cmnuOptionsOutputFilePath = outputFolder + optionsFilename;
+const std::string cmnuBuildLocationFilePath = buildFolder + cmnuBuildLocationDirectory + cmnuFileName;
+const std::string addonsOutputFolderPath = outputFolder + addonOutputFolderName;
+const std::string addonsBuildLocationFolderPath = buildFolder + "Source/" + addonOutputFolderName;
+std::string getCMNUAbsolutePath()
+{
+	return MAIN_FOLDER + "/" + cmnuBuildLocationDirectory + cmnuFileName;
+}
+
+void initMenuFileStream()
+{
+	MenuFile.open(cmnuOutputFilePath, fstream::out | fstream::binary);
+}
+__logOutputStruct::__logOutputStruct()
+{
+	setStandardOutputStream(lava::outputSplitter::sOS_COUT);
+	pushStream(lava::outputEntry(std::make_shared<std::ofstream>(outputFolder + changelogFileName), ULONG_MAX), changelogID);
+}
+std::ostream* __logOutputStruct::getChangelogPtr()
+{
+	return this->getOutputEntry(changelogID)->targetStream.get();
+}
+__logOutputStruct ChangelogOutput{};
+
+std::vector<std::string_view> splitLineContentString(const std::string& joinedStringIn)
+{
+	std::vector<std::string_view> result{};
+
+	std::size_t currEndIndex = 0;
+	while (currEndIndex < joinedStringIn.size())
+	{
+		result.push_back(std::string_view(&joinedStringIn[currEndIndex]));
+		currEndIndex += result.back().size() + 1;
+	}
+
+	return result;
+}
+std::string getLineNameFromLineText(const std::string& lineText)
+{
+	std::string result("");
+
+	if (!lineText.empty())
+	{
+		std::string_view baseString = splitLineContentString(lineText)[0];
+		result = baseString.substr(0, baseString.find(":"));
+	}
+	
+	return result;
+}
+
+std::map<lava::shortNameType, Page*> menuPagesMap{};
+bool pageShortnameIsFree(lava::shortNameType nameIn)
+{
+	return menuPagesMap.find(nameIn) == menuPagesMap.end();
+}
+
+// === Beginning of Line and Page Type Definitions ===
+
+// Line Type Class Member Definitions
+Line::Line() {}
+Line::Line(string Text, u16 TextOffset, u8 type, u8 flags, u8 ColorOffset, int* Index) {
+	this->Text = Text + "\0"s;
+	this->type = type;
+	this->Flags = flags;
+	this->Color = ColorOffset;
+	this->TextOffset = TextOffset;
+	this->Index = Index;
+	Size = Text.size() + TextOffset + 1;
+
+	Padding = (4 - Size % 4) % 4;
+	Size += Padding;
+
+	this->LineName = getLineNameFromLineText(this->Text);
+}
+void Line::WriteLineData()
+{
+	WriteLineData({});
+}
+void Line::WriteLineData(vector<u8> SelectionOffsets)
+{
+	if (behaviorFlags[Line::lbf_REMOVED]) return; // If the line is explicitly marked as removed, skip it!
+
+	if (behaviorFlags[Line::lbf_UNSELECTABLE])
+	{
+		Color = UNSELECTABLE_LINE_COLOR_OFFSET;
+	}
+	Flags &= ~Line::LINE_FLAG_SKIP_PRINTING;
+	if (behaviorFlags[Line::lbf_HIDDEN])
+	{
+		Flags |= Line::LINE_FLAG_SKIP_PRINTING;
+	}
+	Flags &= ~Line::LINE_FLAG_IGNORE_INDIRECT_RESET;
+	if (behaviorFlags[Line::lbf_STICKY])
+	{
+		Flags |= Line::LINE_FLAG_IGNORE_INDIRECT_RESET;
+	}
+
+	vector<u8> output;
+	AddValueToByteArray(Size, output);
+	if (Size == 0) {
+		std::cout << Text << endl;
+	}
+	AddValueToByteArray(type, output);
+	AddValueToByteArray(Flags, output);
+	AddValueToByteArray(Color, output);
+	AddValueToByteArray(TextOffset, output);
+	AddValueToByteArray(lineNum, output);
+	//AddValueToByteArray((u8) 0, output);
+	AddValueToByteArray(Value, output);
+	if (type == PRINT_LINE) {
+		AddValueToByteArray(numArgs, output);
+	}
+	else if (type != COMMENT_LINE) {
+		AddValueToByteArray(UpOffset, output);
+		AddValueToByteArray(DownOffset, output);
+		if (type == SUB_MENU_LINE) {
+			AddValueToByteArray(SubMenuOffset, output);
+		}
+		else {
+			AddValueToByteArray(Default, output);
+			AddValueToByteArray(Max, output);
+			if (type == INTEGER_LINE || type == FLOATING_LINE) {
+				AddValueToByteArray(Min, output);
+				AddValueToByteArray(Speed, output);
+			}
+		}
+	}
+	copy(output.begin(), output.end(), ostreambuf_iterator<char>(MenuFile));
+	if (type == SELECTION_LINE)
+	{
+		Selection* selectionCastPtr = (Selection*)this;
+		if (selectionCastPtr->SourceSelectionPtr != nullptr)
+		{
+			Selection* sourceSelection = selectionCastPtr->SourceSelectionPtr;
+			while (sourceSelection->SourceSelectionPtr != nullptr)
+			{
+				sourceSelection = sourceSelection->SourceSelectionPtr;
+			}
+			lava::writeRawDataToStream<int>(MenuFile, *sourceSelection->Index);
+		}
+		else
+		{
+			lava::writeRawDataToStream<int>(MenuFile, *Index);
+		}
+
+		std::copy(SelectionOffsets.begin(), SelectionOffsets.end(), ostreambuf_iterator<char>(MenuFile));
+	}
+	MenuFile << Text;
+	WritePadding();
+}
+void Line::WritePadding() {
+	for (int i = 0; i < Padding; i++) {
+		MenuFile << '\0';
+	}
+}
+
+// Comment Type Class Member Definitions
+Comment::Comment(string Text, int* Index)
+	: Line(Text, COMMENT_LINE_TEXT_START, COMMENT_LINE, 0, COMMENT_LINE_COLOR_OFFSET, Index) {}
+void Comment::WriteLineData()
+{
+	Line::WriteLineData();
+}
+
+// Print Type Class Member Definitions
+Print::Print(string Text, vector<int*> args)
+	: Line(Text, PRINT_LINE_TEXT_START, PRINT_LINE, 0, COMMENT_LINE_COLOR_OFFSET) {
+	this->args = args;
+	this->numArgs = args.size();
+	Size += args.size() * 4;
+	for (auto x : args) {
+		argValues.push_back(*x);
+	}
+	//cout << Size << endl;
+}
+void Print::WriteLineData()
+{
+	Line::WriteLineData();
+	for (auto x : argValues) {
+		sprintf(OpHexBuffer, "%08X", x);
+		//cout << Text << ": " << OpHexBuffer << endl;
+		x = _byteswap_ulong(x);
+
+		MenuFile.write((const char*)&x, 4);
+		//sprintf(OpHexBuffer, "%08X", x);
+		//cout << Text << ": " << OpHexBuffer << endl;
+		//MenuFile << OpHexBuffer;
+	}
+}
+
+// Selection Type Class Member Definitions
+Selection::Selection(string Text, vector<string> Options, vector<u16> Values, int Default, int& Index)
+	: Line(CreateSelectionString(Text + ":  %s", Options), SELECTION_LINE_OFFSETS_START + Options.size() * 4, SELECTION_LINE, 0, NORMAL_LINE_COLOR_OFFSET, &Index)
+{
+	if (Options.size() != Values.size()) {
+		cout << "Mismatched values" << endl;
+		exit(-1);
+	}
+	u16 offset = Text.size() + 5 + 1 + SELECTION_LINE_OFFSETS_START + Options.size() * 4;
+	for (int i = 0; i < Options.size(); i++) {
+		AddValueToByteArray(offset, OptionOffsets);
+		AddValueToByteArray(Values[i], OptionOffsets);
+		offset += Options[i].size() + 1;
+	}
+	Value = Default;
+	this->Default = Default;
+	this->Max = Options.size() - 1;
+}
+Selection::Selection(string Text, vector<string> Options, int Default, int& Index)
+	: Selection(Text, Options, CreateVector(Options), Default, Index) {}
+Selection::Selection(string Text, vector<string> Options, vector<u16> Values, string Default, int& Index)
+	: Selection(Text, Options, Values, distance(Options.begin(), find(Options.begin(), Options.end(), Default)), Index) {}
+Selection::Selection(string Text, vector<string> Options, string Default, int& Index)
+	: Selection(Text, Options, distance(Options.begin(), find(Options.begin(), Options.end(), Default)), Index) {}
+string Selection::CreateSelectionString(string Text, vector<string> Options)
+{
+	for (string x : Options) {
+		Text += "\0"s + x;
+	}
+	return Text;
+}
+vector<u16> Selection::CreateVector(vector<string> x)
+{
+	vector<u16> Values;
+	for (u16 i = 0; i < x.size(); i++) {
+		Values.push_back(i);
+	}
+	return Values;
+}
+void Selection::WriteLineData()
+{
+	Line::WriteLineData(OptionOffsets);
+}
+std::vector<std::string_view> Selection::getOptionStringViews()
+{
+	std::vector<std::string_view> result{};
+
+	Selection* sourceSelection = this;
+	while (sourceSelection->SourceSelectionPtr != nullptr)
+	{
+		sourceSelection = sourceSelection->SourceSelectionPtr;
+	}
+
+	result = splitLineContentString(sourceSelection->Text);
+	result.erase(result.begin());
+
+	return result;
+}
+
+// SelectionMirror Type Class Member Definitions
+SelectionMirror::SelectionMirror(Selection& SourceSelection, std::string Text, int Default, int& Index, bool inheritFlags)
+	: Selection(Text, {}, {}, Default, Index)
+{
+	this->Min = SourceSelection.Min;
+	this->Max = SourceSelection.Max;
+	this->SourceSelectionPtr = &SourceSelection;
+	if (inheritFlags)
+	{
+		this->behaviorFlags = SourceSelection.behaviorFlags;
+	}
+}
+
+// Toggle Type Class Member Definitions
+Toggle* Toggle::firstToggleInstancePtr = nullptr;
+Toggle::Toggle(string Text, bool Default, int& Index)
+	: Selection(Text, 
+		((firstToggleInstancePtr == nullptr) ? std::vector<std::string>({"OFF", "ON"}) : std::vector<std::string>()),
+		Default, Index)
+{
+	this->Min = 0;
+	this->Max = 1;
+	this->isToggleLine = 1;
+	if (firstToggleInstancePtr == nullptr)
+	{
+		firstToggleInstancePtr = this;
+	}
+	else
+	{
+		this->SourceSelectionPtr = firstToggleInstancePtr;
+	}
+}
+
+// SubMenu Type Class Member Definitions
+SubMenu::SubMenu() {}
+SubMenu::SubMenu(string Text, Page* SubMenuPtr)
+	: Line(Text + " >", SUB_MENU_LINE_TEXT_START, SUB_MENU_LINE, 0, NORMAL_LINE_COLOR_OFFSET)
+{
+	this->SubMenuPtr = SubMenuPtr;
+}
+
+// Integer Type Class Member Definitions
+Integer::Integer(string Text, int Min, int Max, int Default, int Speed, int& Index, std::string format, u8 flags)
+	: Line(Text + ":  " + format, NUMBER_LINE_TEXT_START, INTEGER_LINE, flags, NORMAL_LINE_COLOR_OFFSET, &Index)
+{
+	this->Min = Min;
+	this->Max = Max;
+	Value = Default;
+	this->Default = Default;
+	this->Speed = Speed;
+}
+
+// Floating Type Class Member Definitions
+Floating::Floating(string Text, float Min, float Max, float Default, float Speed, int& Index, string format)
+	: Line(Text + ":  " + format, NUMBER_LINE_TEXT_START, FLOATING_LINE, 0, NORMAL_LINE_COLOR_OFFSET, &Index)
+{
+	this->Min = GetHexFromFloat(Min);
+	this->Max = GetHexFromFloat(Max);
+	Value = GetHexFromFloat(Default);
+	this->Default = GetHexFromFloat(Default);
+	this->Speed = GetHexFromFloat(Speed);
+}
+
+// Page Class Member Definitions
+Page::Page(string Name, vector<Line*> Lines, lava::shortNameType shortName) {
+	if (!shortName.empty())
+	{
+		auto pageFindRes = menuPagesMap.find(shortName);
+		if (pageFindRes == menuPagesMap.end())
+		{
+			menuPagesMap[shortName] = this;
+		}
+		else
+		{
+			std::cerr << "[ERROR] Shortname of page \"" << Name << "\" (" << shortName << ")" <<
+				" is already in use by Page \"" << pageFindRes->second->PageName << "\"!\n";
+			exit(1);
+		}
+	}
+
+	CalledFromLine = std::make_shared<SubMenu>(Name, this);
+	CalledFromLine->Index = &CalledFromLineIndex;
+	PageName = Name;
+	PrepareLines(Lines);
+}
+void Page::PrepareLines()
+{
+	PrepareLines(this->Lines);
+}
+void Page::PrepareLines(const std::vector<Line*> LinesIn)
+{
+	// Reset page size, will be re-tallied in the following loop.
+	Size = NUM_WORD_ELEMS * 4;
+	this->Lines = LinesIn;
+	std::size_t excludedLines = 0;
+	// Do some final line attribute assignment stuff...
+	for (std::size_t i = 0; i < this->Lines.size(); i++)
+	{
+		this->Lines[i]->ParentPageName = PageName;
+		// If the line is explicitly marked as removed...
+		if (this->Lines[i]->behaviorFlags[Line::lbf_REMOVED])
+		{
+			// ... increment the counter...
+			excludedLines++;
+			// ... and skip it!
+			continue;
+		}
+		// Subtract the number of excluded lines from i, to ensure excluded lines aren't counted!
+		this->Lines[i]->lineNum = i - excludedLines;
+		this->Lines[i]->PageOffset = Size;
+		Size += this->Lines[i]->Size;
+	}
+	// ... and connect the lines accordingly!
+	ConnectSelectableLines();
+}
+void Page::WritePage()
+{
+	vector<u8> output;
+	AddValueToByteArray(CurrentLineOffset, output);
+	AddValueToByteArray(PrevPageOffset, output);
+	AddValueToByteArray(NumChangedLines, output);
+	AddValueToByteArray(PrintLowHold, output);
+	if (CalledFromLine != nullptr)
+	{
+		AddValueToByteArray(*CalledFromLine->Index, output);
+	}
+	else
+	{
+		AddValueToByteArray(0xFFFFFFFF, output);
+	}
+	copy(output.begin(), output.end(), ostreambuf_iterator<char>(MenuFile));
+	for (auto x : Lines) {
+		x->WriteLineData();
+	}
+}
+void Page::ConnectSelectableLines()
+{
+	vector<int> SelectableLines{};
+	GetSelectableLines(SelectableLines);
+	if (SelectableLines.size() > 0)
+	{
+		SelectableLines.insert(SelectableLines.begin(), SelectableLines.back());
+		SelectableLines.push_back(SelectableLines[1]);
+
+		for (int i = 1; i < SelectableLines.size() - 1; i++)
+		{
+			Lines[SelectableLines[i]]->UpOffset = Lines[SelectableLines[i - 1]]->PageOffset;
+			Lines[SelectableLines[i]]->DownOffset = Lines[SelectableLines[i + 1]]->PageOffset;
+		}
+
+		CurrentLineOffset = Lines[SelectableLines[1]]->PageOffset;
+		Lines[SelectableLines[1]]->Color = HIGHLIGHTED_LINE_COLOR_OFFSET;
+	}
+	else
+	{
+		CurrentLineOffset = NUM_WORD_ELEMS * 4;
+	}
+}
+void Page::GetSelectableLines(vector<int>& SelectableLines)
+{
+	for (int i = 0; i < Lines.size(); i++)
+	{
+		Line* currLine = Lines[i];
+		if (currLine->type != COMMENT_LINE && currLine->type != PRINT_LINE)
+		{
+			if (!currLine->behaviorFlags[Line::lbf_UNSELECTABLE] &&
+				!currLine->behaviorFlags[Line::lbf_HIDDEN] &&
+				!currLine->behaviorFlags[Line::lbf_REMOVED])
+			{
+				SelectableLines.push_back(i);
+			}
+		}
+	}
+}
+
+// === End of Line and Page Type Definitions ===
+
 
 void CodeMenu()
 {
 #if EON_DEBUG_BUILD
 	//testing page
 	vector<Line*> TestLines;
+	//P2Lines.push_back(new Selection("P2 Identity Crisis", CHARACTER_LIST, CHARACTER_ID_LIST, 0, CHARACTER_SELECT_P2_INDEX));
 	cout << "Debug Toggles:\n";
 	int toggleLocations[16];
 	for(int i = 0; i < 16; i++)
@@ -123,268 +937,290 @@ void CodeMenu()
 	
 	//player pages
 	vector<Line*> P1Lines;
-	P1Lines.push_back(new Comment("Player 1 Codes"));
-	P1Lines.push_back(new Print("Tag Hex: %s", { &P1_TAG_STRING_INDEX }));
-	P1Lines.push_back(new Comment(""));
 	P1Lines.push_back(new Toggle("Infinite Shield", false, INFINITE_SHIELDS_P1_INDEX));
-	P1Lines.push_back(new Comment(""));
-	P1Lines.push_back(new Selection("P1 Character Select", CHARACTER_LIST, CHARACTER_ID_LIST, 0, CHARACTER_SELECT_P1_INDEX));
-	P1Lines.push_back(new Comment(""));
+	Selection* P1CharSelect = new Selection("P1 Character Select", CHARACTER_LIST, CHARACTER_ID_LIST, 0, CHARACTER_SELECT_P1_INDEX);
+	if (!CHARACTER_LIST.empty())
+	{
+		P1Lines.push_back(P1CharSelect);
+	}
 	P1Lines.push_back(new Floating("Select Percent", 0, 999, 0, 1, PERCENT_SELECT_VALUE_P1_INDEX, "%.0f%%"));
 	P1Lines.push_back(new Toggle("Press DPad to select percent", false, PERCENT_SELECT_ACTIVATOR_P1_INDEX));
 	P1Lines.push_back(new Toggle("Disable DPad", false, DISABLE_DPAD_P1_INDEX));
-	P1Lines.push_back(new Selection("Automatic L-Cancelling", { "OFF", "ON" }, 0, ALC_P1_INDEX));
-	P1Lines.push_back(new Toggle("Red Flash on L-Cancel Failure", false, EXTERNAL_INDEX));
-
-	//for (auto x : P1Lines) {
-	//	cout << x->Text << endl;
-	//}
-	Page P1("Player 1 Codes", P1Lines);
+	Selection* P1InputBuffer = new Selection("Input Buffer", { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" }, 0, BUFFER_P1_INDEX);
+	P1InputBuffer->behaviorFlags[Line::lbf_HIDDEN].value = !PROJECT_PLUS_EX_BUILD;
+	Selection* P1ALC = new Selection("Automatic L-Cancelling", { "OFF", "ON", "Modified" }, 0, ALC_P1_INDEX);
+	P1ALC->behaviorFlags[Line::lbf_HIDDEN].value = !PROJECT_PLUS_EX_BUILD;
+	P1Lines.push_back(P1InputBuffer);
+	P1Lines.push_back(P1ALC);
+	P1Lines.push_back(new Floating("ALC Modifier", 0.099, 3, 0.5, 0.05, EXTERNAL_INDEX, "%.2fX"));
+	P1Lines.back()->behaviorFlags[Line::lbf_HIDDEN].value = !PROJECT_PLUS_EX_BUILD;
+	P1Lines.push_back(new Toggle("Red Flash on L-Cancel Failure", false, ALC_P1_FLASH_RED_INDEX));
+	P1Lines.back()->behaviorFlags[Line::lbf_HIDDEN].value = !PROJECT_PLUS_EX_BUILD;
+	P1Lines.push_back(new Comment(""));
+	P1Lines.push_back(new Print("Tag Hex: %s", { &P1_TAG_STRING_INDEX }));
+	P1Lines.push_back(new Comment("For Use With Tag-Based Costumes"));
+	Page P1("Player 1 Codes", P1Lines, lava::shortNameType("_PLAYER1"));
 
 	vector<Line*> P2Lines;
-	P2Lines.push_back(new Comment("Player 2 Codes"));
-	P2Lines.push_back(new Print("Tag Hex: %s", { &P2_TAG_STRING_INDEX }));
-	P2Lines.push_back(new Comment(""));
 	P2Lines.push_back(new Toggle("Infinite Shield", false, INFINITE_SHIELDS_P2_INDEX));
-	P2Lines.push_back(new Comment(""));
-	P2Lines.push_back(new Selection("P2 Character Select", CHARACTER_LIST, CHARACTER_ID_LIST, 0, CHARACTER_SELECT_P2_INDEX));
-	P2Lines.push_back(new Comment(""));
+	if (!CHARACTER_LIST.empty())
+	{
+		P2Lines.push_back(new SelectionMirror(*P1CharSelect, "P2 Character Select", 0, CHARACTER_SELECT_P2_INDEX));
+	}
 	P2Lines.push_back(new Floating("Select Percent", 0, 999, 0, 1, PERCENT_SELECT_VALUE_P2_INDEX, "%.0f%%"));
 	P2Lines.push_back(new Toggle("Press DPad to select percent", false, PERCENT_SELECT_ACTIVATOR_P2_INDEX));
 	P2Lines.push_back(new Toggle("Disable DPad", false, DISABLE_DPAD_P2_INDEX));
-	P2Lines.push_back(new Selection("Automatic L-Cancelling", { "OFF", "ON" }, 0, ALC_P2_INDEX));
-	P2Lines.push_back(new Toggle("Red Flash on L-Cancel Failure", false, EXTERNAL_INDEX));
-	Page P2("Player 2 Codes", P2Lines);
+	P2Lines.push_back(new SelectionMirror(*P1InputBuffer, "Input Buffer", 0, BUFFER_P2_INDEX));
+	P2Lines.push_back(new SelectionMirror(*P1ALC, "Automatic L-Cancelling", 0, ALC_P2_INDEX));
+	P2Lines.push_back(new Floating("ALC Modifier", 0.099, 3, 0.5, 0.05, EXTERNAL_INDEX, "%.2fX"));
+	P2Lines.back()->behaviorFlags[Line::lbf_HIDDEN].value = !PROJECT_PLUS_EX_BUILD;
+	P2Lines.push_back(new Toggle("Red Flash on L-Cancel Failure", false, ALC_P2_FLASH_RED_INDEX));
+	P2Lines.back()->behaviorFlags[Line::lbf_HIDDEN].value = !PROJECT_PLUS_EX_BUILD;
+	P2Lines.push_back(new Comment(""));
+	P2Lines.push_back(new Print("Tag Hex: %s", { &P2_TAG_STRING_INDEX }));
+	P2Lines.push_back(new Comment("For Use With Tag-Based Costumes"));
+	Page P2("Player 2 Codes", P2Lines, lava::shortNameType("_PLAYER2"));
 
 	vector<Line*> P3Lines;
-	P3Lines.push_back(new Comment("Player 3 Codes"));
-	P3Lines.push_back(new Print("Tag Hex: %s", { &P3_TAG_STRING_INDEX }));
-	P3Lines.push_back(new Comment(""));
 	P3Lines.push_back(new Toggle("Infinite Shield", false, INFINITE_SHIELDS_P3_INDEX));
-	P3Lines.push_back(new Comment(""));
-	P3Lines.push_back(new Selection("P3 Character Select", CHARACTER_LIST, CHARACTER_ID_LIST, 0, CHARACTER_SELECT_P3_INDEX));
-	P3Lines.push_back(new Comment(""));
+	if (!CHARACTER_LIST.empty())
+	{
+		P3Lines.push_back(new SelectionMirror(*P1CharSelect, "P3 Character Select", 0, CHARACTER_SELECT_P3_INDEX));
+	}
 	P3Lines.push_back(new Floating("Select Percent", 0, 999, 0, 1, PERCENT_SELECT_VALUE_P3_INDEX, "%.0f%%"));
 	P3Lines.push_back(new Toggle("Press DPad to select percent", false, PERCENT_SELECT_ACTIVATOR_P3_INDEX));
 	P3Lines.push_back(new Toggle("Disable DPad", false, DISABLE_DPAD_P3_INDEX));
-	P3Lines.push_back(new Selection("Automatic L-Cancelling", { "OFF", "ON" }, 0, ALC_P3_INDEX));
-	P3Lines.push_back(new Toggle("Red Flash on L-Cancel Failure", false, EXTERNAL_INDEX));
-	Page P3("Player 3 Codes", P3Lines);
+	P3Lines.push_back(new SelectionMirror(*P1InputBuffer, "Input Buffer", 0, BUFFER_P3_INDEX));
+	P3Lines.push_back(new SelectionMirror(*P1ALC, "Automatic L-Cancelling", 0, ALC_P3_INDEX));
+	P3Lines.push_back(new Floating("ALC Modifier", 0.099, 3, 0.5, 0.05, EXTERNAL_INDEX, "%.2fX"));
+	P3Lines.back()->behaviorFlags[Line::lbf_HIDDEN].value = !PROJECT_PLUS_EX_BUILD;
+	P3Lines.push_back(new Toggle("Red Flash on L-Cancel Failure", false, ALC_P3_FLASH_RED_INDEX));
+	P3Lines.back()->behaviorFlags[Line::lbf_HIDDEN].value = !PROJECT_PLUS_EX_BUILD;
+	P3Lines.push_back(new Comment(""));
+	P3Lines.push_back(new Print("Tag Hex: %s", { &P3_TAG_STRING_INDEX }));
+	P3Lines.push_back(new Comment("For Use With Tag-Based Costumes"));
+	Page P3("Player 3 Codes", P3Lines, lava::shortNameType("_PLAYER3"));
 
 	vector<Line*> P4Lines;
-	P4Lines.push_back(new Comment("Player 4 Codes"));
-	P4Lines.push_back(new Print("Tag Hex: %s", { &P4_TAG_STRING_INDEX }));
-	P4Lines.push_back(new Comment(""));
 	P4Lines.push_back(new Toggle("Infinite Shield", false, INFINITE_SHIELDS_P4_INDEX));
-	P4Lines.push_back(new Comment(""));
-	P4Lines.push_back(new Selection("P4 Character Select", CHARACTER_LIST, CHARACTER_ID_LIST, 0, CHARACTER_SELECT_P4_INDEX));
-	P4Lines.push_back(new Comment(""));
+	if (!CHARACTER_LIST.empty())
+	{
+		P4Lines.push_back(new SelectionMirror(*P1CharSelect, "P4 Character Select", 0, CHARACTER_SELECT_P4_INDEX));
+	}
 	P4Lines.push_back(new Floating("Select Percent", 0, 999, 0, 1, PERCENT_SELECT_VALUE_P4_INDEX, "%.0f%%"));
 	P4Lines.push_back(new Toggle("Press DPad to select percent", false, PERCENT_SELECT_ACTIVATOR_P4_INDEX));
 	P4Lines.push_back(new Toggle("Disable DPad", false, DISABLE_DPAD_P4_INDEX));
-	P4Lines.push_back(new Selection("Automatic L-Cancelling", { "OFF", "ON" }, 0, ALC_P4_INDEX));
-	P4Lines.push_back(new Toggle("Red Flash on L-Cancel Failure", false, EXTERNAL_INDEX));
-	Page P4("Player 4 Codes", P4Lines);
+	P4Lines.push_back(new SelectionMirror(*P1InputBuffer, "Input Buffer", 0, BUFFER_P4_INDEX));
+	P4Lines.push_back(new SelectionMirror(*P1ALC, "Automatic L-Cancelling", 0, ALC_P4_INDEX));
+	P4Lines.push_back(new Floating("ALC Modifier", 0.099, 3, 0.5, 0.05, EXTERNAL_INDEX, "%.2fX"));
+	P4Lines.back()->behaviorFlags[Line::lbf_HIDDEN].value = !PROJECT_PLUS_EX_BUILD;
+	P4Lines.push_back(new Toggle("Red Flash on L-Cancel Failure", false, ALC_P4_FLASH_RED_INDEX));
+	P4Lines.back()->behaviorFlags[Line::lbf_HIDDEN].value = !PROJECT_PLUS_EX_BUILD;
+	P4Lines.push_back(new Comment(""));
+	P4Lines.push_back(new Print("Tag Hex: %s", { &P4_TAG_STRING_INDEX }));
+	P4Lines.push_back(new Comment("For Use With Tag-Based Costumes"));
+	Page P4("Player 4 Codes", P4Lines, lava::shortNameType("_PLAYER4"));
 
-	vector<Line*> PlayerCodesLines;
-	PlayerCodesLines.push_back(new Comment("Toggle per-port settings"));
-	PlayerCodesLines.push_back(new Comment(""));
-	PlayerCodesLines.push_back(&P1.CalledFromLine);
-	PlayerCodesLines.push_back(&P2.CalledFromLine);
-	PlayerCodesLines.push_back(&P3.CalledFromLine);
-	PlayerCodesLines.push_back(&P4.CalledFromLine);
-	Page PlayerCodes("Player Codes", PlayerCodesLines);
-
-	//debug mode page
+	//debug mode
 	vector<Line*> DebugLines;
 	DebugLines.push_back(new Comment("Debug Mode Commands:"));
 	DebugLines.push_back(new Comment("Start = Toggle Frame Advance"));
 	DebugLines.push_back(new Comment("Z = Frame Advance | Hold Z = Slow Motion"));
 	DebugLines.push_back(new Comment(""));
 	DebugLines.push_back(new Toggle("Debug Mode", false, DEBUG_MODE_INDEX));
-	DebugLines.push_back(new Selection("Hitbox Display", { "OFF", "ON", "ON (Hide Characters)" }, 0, DISPLAY_HITBOXES_INDEX));
-	DebugLines.push_back(new Toggle("Draw DI", false, DI_DRAW_INDEX));
-	DebugLines.push_back(new Toggle("ECB Display", false, DISPLAY_COLLISION_INDEX));
-	DebugLines.push_back(new Selection("Stage Collisions", { "OFF", "ON", "ON (Hide Stage)" }, 0, DISPLAY_LEDGEGRAB_INDEX));
-	DebugLines.push_back(new Comment(""));
-	DebugLines.push_back(new Toggle("Show HUD", true, HUD_DISPLAY_INDEX));
+	DebugLines.push_back(new Selection("Hitbox Display", { "OFF", "ON", "Models Off" }, 0, DISPLAY_HITBOXES_INDEX));
+	DebugLines.push_back(new Toggle("Collision Display", false, DISPLAY_COLLISION_INDEX));
+	DebugLines.push_back(new Selection("Stage Collisions", { "OFF", "ON", "Background Off" }, 0, DISPLAY_LEDGEGRAB_INDEX));
 	DebugLines.push_back(new Toggle("Camera Lock", false, CAMERA_LOCK_INDEX));
+	DebugLines.push_back(new Toggle("Draw DI", false, DI_DRAW_INDEX));
 	DebugLines.push_back(new Toggle("FPS Display", false, FPS_DISPLAY_INDEX));
-	Page DebugMode("Debug Mode Settings", DebugLines);
+	DebugLines.push_back(new Toggle("HUD", true, HUD_DISPLAY_INDEX));
+	Page DebugMode("Debug Mode Settings", DebugLines, lava::shortNameType("_DEBUG"));
 
-	//Flight Mode page
-	vector<Line*> FlightModeLines;
-	FlightModeLines.push_back(new Comment("Flight mode settings"));
-	FlightModeLines.push_back(new Comment(""));
-	//FlightModeLines.push_back(new Toggle("Flight Mode", false, DBZ_MODE_INDEX));
-	FlightModeLines.push_back(new Comment(""));
-	FlightModeLines.push_back(new Floating("Max Horizontal Speed", 0, 100, 2, .05, DBZ_MODE_MAX_SPEED_X_INDEX, "%.2f"));
-	FlightModeLines.push_back(new Floating("Max Vertical Speed", 0, 100, 2, .05, DBZ_MODE_MAX_SPEED_Y_INDEX, "%.2f"));
-	FlightModeLines.push_back(new Comment(""));
-	FlightModeLines.push_back(new Floating("Horizontal Acceleration", -100, 100, 1, .05, DBZ_MODE_ACCEL_X_INDEX, "%.2f"));
-	FlightModeLines.push_back(new Floating("Vertical Acceleration", -100, 100, 1, .05, DBZ_MODE_ACCEL_Y_INDEX, "%.2f"));
-	Page FlightModePage("Flight Mode Settings", FlightModeLines);
-
-	vector<Line*> GameplayConstantsLines;
-	GameplayConstantsLines.push_back(new Comment("Modify core game mechanics"));
-	GameplayConstantsLines.push_back(new Comment(""));
-	GameplayConstantsLines.push_back(new Comment("On-hit behavior"));
-	GameplayConstantsLines.push_back(new Floating("Hitstun Multiplier", 0, 20, 0.4, .02, HITSTUN_MULTIPLIER_INDEX, "%.2fx"));
+	//value setting
+	vector<Line*> ConstantsLines;
+	ConstantsLines.push_back(new Comment("Set attributes to new values"));
+	ConstantsLines.push_back(new Comment(""));
+	ConstantsLines.push_back(new Floating("Hitstun Multiplier", 0, 999, 0.4, .01, HITSTUN_MULTIPLIER_INDEX, "%.3f"));
 	constantOverrides.emplace_back(0x80B87AA8, HITSTUN_MULTIPLIER_INDEX);
-	GameplayConstantsLines.push_back(new Floating("Hitlag Multiplier", 0, 20, 1. / 3., .02, HITLAG_MULTIPLIER_INDEX, "%.2fx"));
+	ConstantsLines.push_back(new Floating("Hitlag Multiplier", 0, 999, 1. / 3., .02, HITLAG_MULTIPLIER_INDEX, "%.3f"));
 	constantOverrides.emplace_back(0x80B87AEC, HITLAG_MULTIPLIER_INDEX);
-	GameplayConstantsLines.push_back(new Floating("Hitlag Maximum", 0, 100, 30, 1, HITLAG_MAXIMUM_INDEX, "%.0f"));
+	ConstantsLines.push_back(new Floating("Hitlag Maximum", 0, 999, 30, 1, HITLAG_MAXIMUM_INDEX, "%.3f"));
 	constantOverrides.emplace_back(0x80B87AE8, HITLAG_MAXIMUM_INDEX);
-	GameplayConstantsLines.push_back(new Floating("Electric Hitlag Multiplier", 0, 999, 1.5, .1, ELECTRIC_HITLAG_MULTIPLIER_INDEX, "%.1f"));
+	ConstantsLines.push_back(new Floating("Electric Hitlag Multiplier", 0, 999, 1.5, .1, ELECTRIC_HITLAG_MULTIPLIER_INDEX, "%.3f"));
 	constantOverrides.emplace_back(0x80B87B10, ELECTRIC_HITLAG_MULTIPLIER_INDEX);
-	GameplayConstantsLines.push_back(new Floating("SDI Distance", -100, 100, 6, .5, SDI_DISTANCE_INDEX, "%.1f"));
+	ConstantsLines.push_back(new Floating("SDI Distance", -999, 999, 6, .5, SDI_DISTANCE_INDEX, "%.3f"));
 	constantOverrides.emplace_back(0x80B88354, SDI_DISTANCE_INDEX);
-	GameplayConstantsLines.push_back(new Floating("ASDI Distance", -100, 100, 3, .5, ASDI_DISTANCE_INDEX, "%.1f"));
+	ConstantsLines.push_back(new Floating("ASDI Distance", -999, 999, 3, .5, ASDI_DISTANCE_INDEX, "%.3f"));
 	constantOverrides.emplace_back(0x80B88358, ASDI_DISTANCE_INDEX);
-	GameplayConstantsLines.push_back(new Floating("Knockback Decay Rate", -0.051, 0.102, 0.051, .003, KNOCKBACK_DECAY_MULTIPLIER_INDEX, "%.3f"));
-	constantOverrides.emplace_back(0x80B88534, KNOCKBACK_DECAY_MULTIPLIER_INDEX);
-	GameplayConstantsLines.push_back(new Comment("Shield Mechanics"));
-	GameplayConstantsLines.push_back(new Floating("Minimum Shield Size", -1, 1, 0.15, .02, MINIMUM_SHIELD_SIZE_SCALING_INDEX, "%.2fx"));
-	constantOverrides.emplace_back(0x80B88444, MINIMUM_SHIELD_SIZE_SCALING_INDEX);
-	GameplayConstantsLines.push_back(new Floating("Maximum Shield Size", 0, 5, 1, .05, SHIELD_SIZE_MULTIPLIER_INDEX, "%.2fx"));
-	constantOverrides.emplace_back(0x80B88478, SHIELD_SIZE_MULTIPLIER_INDEX);
-	GameplayConstantsLines.push_back(new Floating("Base Shield Damage", -100, 100, 0, 1, SHIELD_BASE_DAMAGE_INDEX, "%.0f"));
-	constantOverrides.emplace_back(0x80B88460, SHIELD_BASE_DAMAGE_INDEX);
-	GameplayConstantsLines.push_back(new Floating("Shield Damage Multiplier", -4, 4, 1, .02, SHIELD_DAMAGE_MULTIPLIER_INDEX, "%.2fx"));
-	constantOverrides.emplace_back(0x80B8845C, SHIELD_DAMAGE_MULTIPLIER_INDEX);
-	GameplayConstantsLines.push_back(new Floating("Shield Tilt Multiplier", 0, 1.95, 0.5, .05, SHIELD_TILT_MULTIPLIER_INDEX, "%.2fx"));
-	constantOverrides.emplace_back(0x80B88484, SHIELD_TILT_MULTIPLIER_INDEX);
-	GameplayConstantsLines.push_back(new Comment("Other"));
-	//ValueLines.push_back(new Floating("Attacker Shield Pushback Friction Multiplier", -999, 999, 1.1, .05, SDI_DISTANCE_INDEX, "%.3f"));
-	GameplayConstantsLines.push_back(new Toggle("Universal Walljumps", false, ALL_CHARS_WALLJUMP_INDEX));
-	GameplayConstantsLines.push_back(new Floating("Walljump Horizontal Multiplier", -1, 5, 0.9, .05, WALLJUMP_HORIZONTAL_MULTIPLIER_INDEX, "%.2fx"));
+	ConstantsLines.push_back(new Floating("Walljump Horizontal Multiplier", -999, 999, 0.9, .05, WALLJUMP_HORIZONTAL_MULTIPLIER_INDEX, "%.3f"));
 	constantOverrides.emplace_back(0x80B88420, WALLJUMP_HORIZONTAL_MULTIPLIER_INDEX);
-	GameplayConstantsLines.push_back(new Floating("Wall Bounce Knockback Multiplier", -1, 5, 0.80, .05, WALL_BOUNCE_KNOCKBACK_MULTIPLIER_INDEX, "%.2fx"));
+	ConstantsLines.push_back(new Floating("Minimum Shield Size Scale", -999, 999, 0.15, .02, MINIMUM_SHIELD_SIZE_SCALING_INDEX, "%.3f"));
+	constantOverrides.emplace_back(0x80B88444, MINIMUM_SHIELD_SIZE_SCALING_INDEX);
+	ConstantsLines.push_back(new Floating("Shield Damage Multiplier", -999, 999, 1, .02, SHIELD_DAMAGE_MULTIPLIER_INDEX, "%.3f"));
+	constantOverrides.emplace_back(0x80B8845C, SHIELD_DAMAGE_MULTIPLIER_INDEX);
+	ConstantsLines.push_back(new Floating("Base Shield Damage", -999, 999, 0, 1, SHIELD_BASE_DAMAGE_INDEX, "%.3f"));
+	constantOverrides.emplace_back(0x80B88460, SHIELD_BASE_DAMAGE_INDEX);
+	ConstantsLines.push_back(new Floating("Shield Size Multiplier", -999, 999, 1, .05, SHIELD_SIZE_MULTIPLIER_INDEX, "%.3f"));
+	constantOverrides.emplace_back(0x80B88478, SHIELD_SIZE_MULTIPLIER_INDEX);
+	ConstantsLines.push_back(new Floating("Shield Tilt Multiplier", -999, 999, 0.5, .05, SHIELD_TILT_MULTIPLIER_INDEX, "%.3f"));
+	constantOverrides.emplace_back(0x80B88484, SHIELD_TILT_MULTIPLIER_INDEX);
+	//ValueLines.push_back(new Floating("Attacker Shield Pushback Friction Multiplier", -999, 999, 1.1, .05, SDI_DISTANCE_INDEX, "%.3f"));
+	ConstantsLines.push_back(new Floating("Wall Bounce Knockback Multiplier", -999, 999, 0.80, .02, WALL_BOUNCE_KNOCKBACK_MULTIPLIER_INDEX, "%.3f"));
 	constantOverrides.emplace_back(0x80B88510, WALL_BOUNCE_KNOCKBACK_MULTIPLIER_INDEX);
-	GameplayConstantsLines.push_back(new Selection("Dash Attack Item Grab Toggle", { "OFF", "ON" }, 0, DASH_ATTACK_ITEM_GRAB_INDEX));
-	GameplayConstantsLines.push_back(new Selection("Tripping Toggle", { "OFF", "ON" }, 0, TRIP_TOGGLE_INDEX));
-	GameplayConstantsLines.push_back(new Floating("Tripping Rate", 0, 100, 1.0, 1.0, TRIP_RATE_MULTIPLIER_INDEX, "%.2f%"));
-	GameplayConstantsLines.push_back(new Selection("Tripping Cooldown Toggle", { "ON", "OFF" }, 0, TRIP_INTERVAL_INDEX));
+	ConstantsLines.push_back(new Floating("Knockback Decay Rate", -999, 999, 0.051, .001, KNOCKBACK_DECAY_MULTIPLIER_INDEX, "%.3f"));
+	constantOverrides.emplace_back(0x80B88534, KNOCKBACK_DECAY_MULTIPLIER_INDEX);
+	ConstantsLines.push_back(new Selection("Staling Toggle", { "Default", "ON", "OFF" }, 0, STALING_TOGGLE_INDEX));
+	if (xml::CONFIG_DASH_ATTACK_ITEM_GRAB_ENABLED)
+	{
+		ConstantsLines.push_back(new Toggle("Aerial & Dash Attack Item Grab Toggle", 0, DASH_ATTACK_ITEM_GRAB_INDEX));
+	}
+	//ConstantsLines.push_back(new Selection("Tripping Toggle", { "OFF", "ON" }, 0, TRIP_TOGGLE_INDEX));
+	//ConstantsLines.push_back(new Floating("Tripping Rate", 0, 100, 1.0, 1.0, TRIP_RATE_MULTIPLIER_INDEX, "%.2f%"));
+	//ConstantsLines.push_back(new Selection("Tripping Cooldown Toggle", { "ON", "OFF" }, 0, TRIP_INTERVAL_INDEX));
+	if (xml::CONFIG_JUMPSQUAT_OVERRIDE_ENABLED)
+	{
+		const int minFrameCount = 1;
+		const int maxFrameCount = 3600;
+		ConstantsLines.push_back(new Selection("Jumpsquat Modifier Mode", { "Disabled", "Replace", "Add", "Subtract", "Multiply", "Divide", "Distance From Value", "Random Within Range"}, 0, JUMPSQUAT_OVERRIDE_TOGGLE_INDEX));
+		ConstantsLines.push_back(new Integer("Jumpsquat Modifier Value", minFrameCount, maxFrameCount, 3, 1, JUMPSQUAT_OVERRIDE_FRAMES_INDEX, "%d", Integer::INT_FLAG_ALLOW_WRAP));
+		ConstantsLines.push_back(new Integer("Jumpsquat Modifier Minimum Length", minFrameCount, maxFrameCount, minFrameCount, 1, JUMPSQUAT_OVERRIDE_MIN_INDEX, "%d", Integer::INT_FLAG_ALLOW_WRAP));
+		ConstantsLines.push_back(new Integer("Jumpsquat Modifier Maximum Length", minFrameCount, maxFrameCount, maxFrameCount, 1, JUMPSQUAT_OVERRIDE_MAX_INDEX, "%d", Integer::INT_FLAG_ALLOW_WRAP));
+	}
+	Page ConstantsPage("Gameplay Modifiers", ConstantsLines, lava::shortNameType("_GMPLMOD"));
+
+	//DBZ Mode settings
+	vector<Line*> DBZModeLines;
+	DBZModeLines.push_back(new Toggle("Flight Mode", false, DBZ_MODE_INDEX));
+	DBZModeLines.push_back(new Floating("Max Horizontal Speed", 0, 100, 2, .05, DBZ_MODE_MAX_SPEED_X_INDEX, "%.3f"));
+	DBZModeLines.push_back(new Floating("Max Vertical Speed", 0, 100, 2, .05, DBZ_MODE_MAX_SPEED_Y_INDEX, "%.3f"));
+	DBZModeLines.push_back(new Comment("Acceleration Scales Based On Stick Magnitude"));
+	DBZModeLines.push_back(new Floating("Horizontal Acceleration", -100, 100, 1, .01, DBZ_MODE_ACCEL_X_INDEX, "%.3f"));
+	DBZModeLines.push_back(new Floating("Vertical Acceleration", -100, 100, 1, .01, DBZ_MODE_ACCEL_Y_INDEX, "%.3f"));
+	Page DBZModePage("Flight Mode Settings", DBZModeLines, lava::shortNameType("_FLIGHT"));
+	
+	//Special Mode Settings
+	vector<Line*> SpecialModeLines;
+	SpecialModeLines.push_back(new Comment("Special Modes"));
+	SpecialModeLines.push_back(ConstantsPage.CalledFromLine.get());
+	SpecialModeLines.push_back(DBZModePage.CalledFromLine.get());
+	SpecialModeLines.push_back(new Toggle("Random Angle Mode", false, RANDOM_ANGLE_INDEX));
+	SpecialModeLines.push_back(new Toggle("War Mode", false, WAR_MODE_INDEX));
+	// War Mode is only visible by default on P+Ex builds based on pre v3.0 P+.
+	SpecialModeLines.back()->behaviorFlags[Line::lbf_HIDDEN].value = !(PROJECT_PLUS_EX_BUILD && ENSURE_PRE_PP30_COMPAT);
+	SpecialModeLines.push_back(new Selection("Gameplay Speed Modifier", { "Off", "1.25", "1.5x", "2.0x", "1/2x", "3/4x" }, 0, SPEED_INDEX));
+	SpecialModeLines.back()->behaviorFlags[Line::lbf_REMOVED].value = !PROJECT_PLUS_EX_BUILD;
+	SpecialModeLines.push_back(new Toggle("Scale Mode", false, SCALE_INDEX));
+	SpecialModeLines.back()->behaviorFlags[Line::lbf_REMOVED].value = !PROJECT_PLUS_EX_BUILD;
+	SpecialModeLines.push_back(new Floating("Scale Modifier", 0.5, 3, 1, 0.05, EXTERNAL_INDEX, "%.2fX"));
+	SpecialModeLines.back()->behaviorFlags[Line::lbf_REMOVED].value = !PROJECT_PLUS_EX_BUILD;
+	SpecialModeLines.push_back(new Selection("Big Head Mode", { "Off", "On", "Larger", "Largest", "Largerest" }, 0, BIG_HEAD_INDEX));
+	Page SpecialModePage("Special Modes", SpecialModeLines, lava::shortNameType("_SPECIAL"));
 
 
-	Page GameplayConstantsPage("Gameplay Modifiers", GameplayConstantsLines);
-
-	//Gameplay Modifiers ("Special Settings") setting
-	vector<Line*> SpecialSettings;
-	SpecialSettings.push_back(new Comment("Toggle for-fun modes"));
-	SpecialSettings.push_back(new Comment("and modify core game mechanics"));
-	SpecialSettings.push_back(new Comment(""));
-	SpecialSettings.push_back(&GameplayConstantsPage.CalledFromLine);
-	SpecialSettings.push_back(new Comment(""));
-	SpecialSettings.push_back(new Toggle("Flight Mode", false, DBZ_MODE_INDEX));
-	SpecialSettings.push_back(&FlightModePage.CalledFromLine);
-	SpecialSettings.push_back(new Comment(""));
-	SpecialSettings.push_back(new Toggle("Crowd Cheers", false, CROWD_CHEER_TOGGLE_INDEX));
-	SpecialSettings.push_back(new Selection("Move Staling", { "ON (Versus)", "ON (Versus + Solo)", "OFF" }, 0, STALING_TOGGLE_INDEX));
-	Page SpecialSettingsPage("Special Settings", SpecialSettings);
+	
 
 	//main page
 	vector<Line*> MainLines;
-#if DOLPHIN_BUILD
-	MainLines.push_back(new Comment("Brawl P+ Netplay Code Menu", &MENU_TITLE_CHECK_LOCATION));
-#else
-	MainLines.push_back(new Comment("Brawl P+ Code Menu", &MENU_TITLE_CHECK_LOCATION));
-#endif
-
-	MainLines.push_back(new Comment("X = Reset Selection | Y = Reset Page"));
-	MainLines.push_back(new Comment("Hold Z = Scroll Faster"));
-	MainLines.push_back(new Comment(""));
+	// Writes the Menu's Title, appending the netplay suffix only if the config file didn't specify its own title.
+	MainLines.push_back(new Comment(MENU_NAME + ((!CUSTOM_NAME_SUPPLIED && BUILD_NETPLAY_FILES) ? " (Netplay)" : "")));
+	if (!xml::CONFIG_DELETE_CONTROLS_COMMENTS)
+	{
+		MainLines.push_back(new Comment("Green = Comments | Blue = Changed"));
+		MainLines.push_back(new Comment("A = Enter Submenu | B = Back/Exit"));
+		MainLines.push_back(new Comment("X = Reset Selection | Y = Reset Page"));
+		MainLines.push_back(new Comment("Hold Z = Scroll Faster"));
+		MainLines.push_back(new Comment(""));
+	}
+	for (std::size_t i = 0; i < xml::CONFIG_INCOMING_COMMENTS.size(); i++)
+	{
+		MainLines.push_back(new Comment(xml::CONFIG_INCOMING_COMMENTS[i]));
+	}
+	
 
 #if EON_DEBUG_BUILD
 	MainLines.push_back(&TestPage.CalledFromLine);
 #endif
 	
-	MainLines.push_back(&DebugMode.CalledFromLine);
-
-#if DOLPHIN_BUILD
-	// Only include the Roster Line if there's more than one to choose between.
-	if (ROSTER_LIST.size() > 1)
-	{
-		MainLines.push_back(new Selection("CSS Roster Version", ROSTER_LIST, 1, CSS_VERSION_SETTING_INDEX));
-	}
-#else
-	// Only include the Roster Line if there's more than one to choose between.
-	if (ROSTER_LIST.size() > 1)
-	{
-		MainLines.push_back(new Selection("CSS Roster Version", ROSTER_LIST, 0, CSS_VERSION_SETTING_INDEX));
-	}
-#endif
-
-#if DOLPHIN_BUILD
-	MainLines.push_back(new Selection("Stagelist", { "Brawl", "Project+" }, 1, STAGELIST_INDEX));
-#else
-	MainLines.push_back(new Selection("Stagelist", { "Brawl", "Project+" }, 0, STAGELIST_INDEX));
-#endif
-	constantOverrides.emplace_back(0x80523400, STAGELIST_INDEX);
-
+	MainLines.push_back(DebugMode.CalledFromLine.get());
 	//	MainLines.push_back(new Selection("Endless Friendlies", { "OFF", "Same Stage", "Random Stage", "Round Robin" }, 0, INFINITE_FRIENDLIES_INDEX));
-	//	MainLines.push_back(new Selection("Endless Friendlies Mode", { "OFF", "All Stay", "Winner Stays", "Loser Stays", "Rotation"}, 0, ENDLESS_FRIENDLIES_MODE_INDEX));
-	MainLines.push_back(new Selection("Endless Friendlies", { "OFF", "ON", "ON (1v1)"}, 0, ENDLESS_FRIENDLIES_MODE_INDEX));
-	//MainLines.push_back(new Selection("Endless Friendlies Stage Selection", { "Random", "Same" }, 0, ENDLESS_FRIENDLIES_STAGE_SELECTION_INDEX));
+	MainLines.push_back(new Selection("Endless Friendlies Mode", { "OFF", "All Stay", "Winner Stays", "Loser Stays", "Rotation"}, 0, ENDLESS_FRIENDLIES_MODE_INDEX));
+	MainLines.push_back(new Selection("Endless Friendlies Stage Selection", { "Random", "Same" }, 0, ENDLESS_FRIENDLIES_STAGE_SELECTION_INDEX));
 #if TOURNAMENT_ADDITION_BUILD
 	MainLines.push_back(new Selection("Random 1-1", { "OFF", "ON" }, 0, RANDOM_1_TO_1_INDEX));
 #endif
-	MainLines.push_back(new Selection("Alternate Stages", { "ON", "Random", "OFF" }, 0, ALT_STAGE_BEHAVIOR_INDEX));
-	MainLines.push_back(new Toggle("Skip Results Screen", false, AUTO_SKIP_TO_CSS_INDEX));
+	MainLines.push_back(new Selection("Alternate Stages", { "Enabled", "Random", "OFF" }, 0, ALT_STAGE_BEHAVIOR_INDEX));
+	MainLines.push_back(new Toggle("Autoskip Results Screen", false, AUTO_SKIP_TO_CSS_INDEX));
 #if DOLPHIN_BUILD
 	MainLines.push_back(new Toggle("Autosave Replays", true, AUTO_SAVE_REPLAY_INDEX));
 #else
 	MainLines.push_back(new Toggle("Autosave Replays", false, AUTO_SAVE_REPLAY_INDEX));
 #endif
-	//MainLines.push_back(new Toggle("Save Previous Replay", false, SAVE_REPLAY_ANYWHERE_INDEX));
-	MainLines.push_back(new Selection("Save Previous Replay", { "OFF", "Save On Exit" }, 0, SAVE_REPLAY_ANYWHERE_INDEX));
-	MainLines.push_back(new Comment(""));
-	MainLines.push_back(&SpecialSettingsPage.CalledFromLine);
-	MainLines.push_back(&PlayerCodes.CalledFromLine);
+	MainLines.push_back(new Toggle("Save Previous Replay", false, SAVE_REPLAY_ANYWHERE_INDEX));
 	MainLines.push_back(new Selection("Tag-Based Costumes", { "ON", "ON + Teams", "OFF" }, 0, TAG_COSTUME_TOGGLE_INDEX));
-	MainLines.push_back(new Selection("Code Menu Activation", { "Enabled", "Debug", "Disabled" }, 0, CODE_MENU_ACTIVATION_SETTING_INDEX));
+	MainLines.push_back(P1.CalledFromLine.get());
+	MainLines.push_back(P2.CalledFromLine.get());
+	MainLines.push_back(P3.CalledFromLine.get());
+	MainLines.push_back(P4.CalledFromLine.get());
+	MainLines.push_back(SpecialModePage.CalledFromLine.get());
 
 	
-	//MainLines.push_back(new Print("%s", {&tets}));
+	// HUD Color Settings
+	vector<Line*> HUDColorLines;
+	HUDColorLines.push_back(new Comment("Replacement HUD Colors"));
+	std::vector<std::string> schemeNames(pscc::schemeTable.entries.size(), "");
+	for (std::size_t i = 0; i < pscc::schemeTable.entries.size(); i++)
+	{
+		schemeNames[i] = pscc::schemeTable.entries[i].name;
+	}
+	Selection* P1ColorLine = new Selection("Player 1", schemeNames, pscc::schemePredefIDs::spi_P1, PSCC_COLOR_1_INDEX);
+	P1ColorLine->behaviorFlags[Line::lbf_STICKY].value = 1;
+	HUDColorLines.push_back(P1ColorLine);
+	HUDColorLines.push_back(new SelectionMirror(*P1ColorLine, "Player 2", pscc::schemePredefIDs::spi_P2, PSCC_COLOR_2_INDEX));
+	HUDColorLines.push_back(new SelectionMirror(*P1ColorLine, "Player 3", pscc::schemePredefIDs::spi_P3, PSCC_COLOR_3_INDEX));
+	HUDColorLines.push_back(new SelectionMirror(*P1ColorLine, "Player 4", pscc::schemePredefIDs::spi_P4, PSCC_COLOR_4_INDEX));
+	Page HUDColorsPage("HUD Colors", HUDColorLines);
+	if (xml::CONFIG_PSCC_ENABLED && (pscc::schemeTable.entries.size() >= 4))
+	{
+		MainLines.push_back(HUDColorsPage.CalledFromLine.get());
+	}
+
+
+#if BUILD_TYPE == PROJECT_PLUS
+	MainLines.push_back(new Toggle("Crowd Cheers", false, CROWD_CHEER_TOGGLE_INDEX));
+#endif
+
+	MainLines.push_back(new Selection("Code Menu Activation", { "Default", "PM 3.6", "OFF" }, 0, CODE_MENU_ACTIVATION_SETTING_INDEX));
+	if (ROSTER_LIST.size() > 1)
+	{
+		MainLines.push_back(new Selection("CSS Roster Version", ROSTER_LIST, 0, CSS_VERSION_SETTING_INDEX));
+	}
+
+	if (THEME_LIST.size() > 1)
+	{
+		MainLines.push_back(new Selection("Active Theme", THEME_LIST, 0, THEME_SETTING_INDEX));
+	}
 	
-	
-	/*MainLines.push_back(new Integer("P1 1st Shield Red", 0, 0xFF, 0, 1, SHIELD_RED_1));
-	MainLines.push_back(new Integer("P1 1st Shield Green", 0, 0xFF, 0, 1, SHIELD_GREEN_1));
-	MainLines.push_back(new Integer("P1 1st Shield Blue", 0, 0xFF, 0, 1, SHIELD_BLUE_1));
-	MainLines.push_back(new Integer("P1 1st Shield Alpha", 0, 0xFF, 0, 1, SHIELD_ALPHA_1));
-	MainLines.push_back(new Integer("P1 2nd Shield Red", 0, 0xFF, 0, 1, SHIELD_RED_2));
-	MainLines.push_back(new Integer("P1 2nd Shield Green", 0, 0xFF, 0, 1, SHIELD_GREEN_2));
-	MainLines.push_back(new Integer("P1 2nd Shield Blue", 0, 0xFF, 0, 1, SHIELD_BLUE_2));
-	MainLines.push_back(new Integer("P1 2nd Shield Alpha", 0, 0xFF, 0, 1, SHIELD_ALPHA_2));
-	MainLines.push_back(new Integer("P1 3rd Shield Red", 0, 0xFF, 0, 1, SHIELD_RED_3));
-	MainLines.push_back(new Integer("P1 3rd Shield Green", 0, 0xFF, 0, 1, SHIELD_GREEN_3));
-	MainLines.push_back(new Integer("P1 3rd Shield Blue", 0, 0xFF, 0, 1, SHIELD_BLUE_3));
-	MainLines.push_back(new Integer("P1 3rd Shield Alpha", 0, 0xFF, 0, 1, SHIELD_ALPHA_3));
-	MainLines.push_back(new Integer("P1 4th Shield Red", 0, 0xFF, 0, 1, SHIELD_RED_4));
-	MainLines.push_back(new Integer("P1 4th Shield Green", 0, 0xFF, 0, 1, SHIELD_GREEN_4));
-	MainLines.push_back(new Integer("P1 4th Shield Blue", 0, 0xFF, 0, 1, SHIELD_BLUE_4));
-	MainLines.push_back(new Integer("P1 4th Shield Alpha", 0, 0xFF, 0, 1, SHIELD_ALPHA_4));*/
-
-
-
-	Page Main("Main", MainLines);
+	Page Main("Main", MainLines, lava::shortNameType("_MAIN"));
 	
 	//Unclepunch fps code
-	vector<unsigned int> x = { 3254926684, 3, 2288895028, 946012161, 2557330484, 2283733000, 1610612736, 0, 3254926716, 6, 2288895029, 946012161, 2557330485, 738394172, 1098907672, 2288895028, 2959983670, 945815552, 2557330484, 2557330485, 2147549204, 0 };
-
-	for(auto a: x) {
-		WriteIntToFile(a);
-	}
+	CodeRaw("[CM: Code Menu] FPS Code [UnclePunch]", "", {
+		3254926684, 3, 2288895028, 946012161, 2557330484, 2283733000, 1610612736, 0, 3254926716, 6, 2288895029, 946012161, 2557330485, 738394172, 1098907672, 2288895028, 2959983670, 945815552, 2557330484, 2557330485, 2147549204, 0
+		});
 
 	CreateMenu(Main);
 
 	PrintCodeMenu();
 
-	PrimeCodeMenu();
+#if ENSURE_PRE_PP30_COMPAT
+	PrimeCodeMenu();	// In post P+ v3.0 based builds, this is applied directly to sora_menu_main instead
+#endif
 
 	ControlCodeMenu();
 
 	ActualCodes();
+
+	utilitySubroutines();
 
 #if EON_DEBUG_BUILD
 	for(auto TOGGLE_LOC: toggleLocations)
@@ -486,7 +1322,7 @@ void printMenuSetters() {
 }
 
 void stopAnouncer() {
-	ASMStart(0x809580b4);
+	ASMStart(0x809580b4, "[CM: Code Menu] Stop Announcer");
 	//SaveRegisters();
 	
 	int reg1 = 4;
@@ -505,7 +1341,7 @@ void endlessFriendlies() {
 
 	//r3 + 0x5D is flag
 	//r3 + 0x28 ^ 0x20 is port num (0 based)
-	ASMStart(0x809489ec);
+	ASMStart(0x809489ec, "[CM: Code Menu] Endless Friendlies");
 	SaveRegisters();
 
 	int reg1 = 31;
@@ -592,7 +1428,7 @@ void ActualCodes()
 	if(ALT_STAGE_BEHAVIOR_INDEX != -1) {
 		//ASMStart(0x8094a168);
 #if BUILD_TYPE == PROJECT_PLUS
-		ASMStart(0x8010f990);
+		ASMStart(0x8010f990, "[CM: Code Menu] Alt Stage Behavior");
 #else
 		ASMStart(0x8094bf60);
 #endif
@@ -668,7 +1504,7 @@ void ActualCodes()
 	}
 
 	if (CROWD_CHEER_TOGGLE_INDEX != -1) {
-		ASMStart(0x8081AD54);
+		ASMStart(0x8081AD54, "[CM: Code Menu] Crowd Cheer Toggle");
 		SaveRegisters();
 
 		int reg1 = 31;
@@ -685,7 +1521,7 @@ void ActualCodes()
 	}
 
 	if (STALING_TOGGLE_INDEX != -1) {
-		ASMStart(0x808e00a4);
+		ASMStart(0x808e00a4, "[CM: Code Menu] Staling Toggle");
 		
 		LoadWordToReg(6, STALING_TOGGLE_INDEX + Line::VALUE);
 		If(6, EQUAL_I, 1); {
@@ -699,13 +1535,18 @@ void ActualCodes()
 		ASMEnd(0x5400efff); //rlwinm. r0, r0, 29, 31, 31
 	}
 
-	printf("%X\n", SHIELD_RED_1);
-
 	ControlCodes();
 }
 
-void CreateMenu(Page MainPage)
+void CreateMenu(Page& MainPage)
 {
+	if (!xml::collectedAddons.empty())
+	{
+		xml::applyCollectedAddons(ChangelogOutput);
+	}
+	xml::applyLineSettingsFromMenuOptionsTree(MainPage, cmnuOptionsOutputFilePath, ChangelogOutput);
+	xml::buildMenuOptionsTreeFromMenu(MainPage, cmnuOptionsOutputFilePath);
+
 	//make pages
 	CurrentOffset = START_OF_CODE_MENU;
 	vector<Page*> Pages(1, &MainPage);
@@ -714,6 +1555,7 @@ void CreateMenu(Page MainPage)
 	for (int i = 0; i < Pages.size(); i++) {
 		CurrentOffset += Page::NUM_WORD_ELEMS * 4;
 		for (Line* &x : Pages[i]->Lines) {
+			if (x->behaviorFlags[Line::lbf_REMOVED]) continue; // If the line is explicitly marked as removed, skip it!
 			if (x->Index != nullptr) {
 				*(x->Index) = CurrentOffset;
 			}
@@ -744,12 +1586,12 @@ void CreateMenu(Page MainPage)
 	//button combos
 	AddValueToByteArray(BUTTON_L | BUTTON_R | BUTTON_Y , Header); //salty runback
 	AddValueToByteArray(BUTTON_L | BUTTON_R | BUTTON_X, Header); //skip results
-	//line colors
-	AddValueToByteArray(MENU_TEXT_GRAY, Header); //unhighlighted line color, prev WHITE
-	AddValueToByteArray(MENU_TEXT_YELLOW, Header); //highlighted line color, prev YELLOW
-	AddValueToByteArray(MENU_TEXT_MODIFIED_UNSELECTED, Header); //changed line color
-	AddValueToByteArray(MENU_TEXT_MODIFIED_SELECTED, Header); //changed and highlighted line color
-	AddValueToByteArray(GREEN, Header); //comment line color
+	// Float Conversion Space
+	AddValueToByteArray(0x43300000, Header); // Conversion Constant
+	AddValueToByteArray(0x00000000, Header);
+	AddValueToByteArray(0x43300000, Header); // Conversion Staging Space
+	AddValueToByteArray(0x00000000, Header);
+	AddValueToByteArray(0x00000000, Header); // Extra Staging Word
 	//frame timers
 	AddValueToByteArray(0, Header); //move frame timer
 	AddValueToByteArray(0, Header); //value frame timer
@@ -806,13 +1648,6 @@ void CreateMenu(Page MainPage)
 	AddValueToByteArray(DISABLE_DPAD_P2_INDEX, Header); //P2
 	AddValueToByteArray(DISABLE_DPAD_P3_INDEX, Header); //P3
 	AddValueToByteArray(DISABLE_DPAD_P4_INDEX, Header); //P4
-
-	//Stagelist Looter
-	AddValueToByteArray(STAGELIST_INDEX, Header);
-
-	//Universal walljump
-	AddValueToByteArray(ALL_CHARS_WALLJUMP_INDEX, Header);
-
 	//Endless Rotation player queue
 	AddValueToByteArray(0, Header);
 	AddValueToByteArray(0, Header);
@@ -874,26 +1709,70 @@ void CreateMenu(Page MainPage)
 	AddValueToByteArray(0, Header);
 	//SHOULD_RESET_STAGE_COLLISIONS_FLAG_LOC
 	AddValueToByteArray(0, Header);
-	
+
 	//Auto L-Cancelling
 	AddValueToByteArray(ALC_P1_INDEX, Header);
 	AddValueToByteArray(ALC_P2_INDEX, Header);
 	AddValueToByteArray(ALC_P3_INDEX, Header);
 	AddValueToByteArray(ALC_P4_INDEX, Header);
+	
+	//Big Head Mode Index
+	AddValueToByteArray(BIG_HEAD_INDEX, Header);
+
+	//Random Angle Mode
+	AddValueToByteArray(RANDOM_ANGLE_INDEX, Header);
+
+	//War Mode Index
+	AddValueToByteArray(WAR_MODE_INDEX, Header);
+
+	//Input Buffer
+	AddValueToByteArray(BUFFER_P1_INDEX, Header);
+	AddValueToByteArray(BUFFER_P2_INDEX, Header);
+	AddValueToByteArray(BUFFER_P3_INDEX, Header);
+	AddValueToByteArray(BUFFER_P4_INDEX, Header);
+
+	//Scale Modifier
+	AddValueToByteArray(SCALE_INDEX, Header);
+
+	//Scale Modifier
+	AddValueToByteArray(SPEED_INDEX, Header);
 
 	// CSS VER Modifier
 	AddValueToByteArray(CSS_VERSION_SETTING_INDEX, Header);
 
-	// Dash-Attack Item Grab Toggle
-	AddValueToByteArray(DASH_ATTACK_ITEM_GRAB_INDEX, Header);
+	// Theme Setting
+	AddValueToByteArray(THEME_SETTING_INDEX, Header);
 
+	// Dash Attack Item Grab Setting
+	AddValueToByteArray(DASH_ATTACK_ITEM_GRAB_INDEX, Header);
+	
 	// Tripping Toggle
 	AddValueToByteArray(TRIP_TOGGLE_INDEX, Header);
 	// Tripping Rate Multiplier
 	AddValueToByteArray(TRIP_RATE_MULTIPLIER_INDEX, Header);
-	// Tripping Cooldown
+	// Tripping Cooldown Toggle
 	AddValueToByteArray(TRIP_INTERVAL_INDEX, Header);
 
+	// PSCC Settings
+	AddValueToByteArray(PSCC_COLOR_1_INDEX, Header);
+	AddValueToByteArray(PSCC_COLOR_2_INDEX, Header);
+	AddValueToByteArray(PSCC_COLOR_3_INDEX, Header);
+	AddValueToByteArray(PSCC_COLOR_4_INDEX, Header);
+	//PSCC_TEAM_BATTLE_STORE_LOC
+	// First byte is an offset used to lbzx to either VALUE or DEFAULT quickly (init to VALUE).
+	AddValueToByteArray(Line::VALUE << 0x18, Header);
+	// Player Slot Color Float Table Address
+	AddValueToByteArray(0, Header);
+
+	// Jumpsquat Override
+	AddValueToByteArray(JUMPSQUAT_OVERRIDE_TOGGLE_INDEX, Header);
+	AddValueToByteArray(JUMPSQUAT_OVERRIDE_FRAMES_INDEX, Header);
+	AddValueToByteArray(JUMPSQUAT_OVERRIDE_MIN_INDEX, Header);
+	AddValueToByteArray(JUMPSQUAT_OVERRIDE_MAX_INDEX, Header);
+
+	// Player Slot Color Callback Table Address
+	AddValueToByteArray(0xFFFFFFFF, Header);
+	
 	//draw settings buffer
 	vector<u32> DSB(0x200 / 4, 0);
 	DSB[0x4 / 4] = 0xFFFFFFFF;
@@ -908,8 +1787,40 @@ void CreateMenu(Page MainPage)
 		AddValueToByteArray(x, Header);
 	}
 
+	// If there are MEM2Constants...
+	if (MEM2_CONSTANTS_LENGTH > 0)
+	{
+		// ... reserve space for them in the CMNU!
+		Header.resize(Header.size() + MEM2_CONSTANTS_LENGTH, 0xCC);
+	}
+
+	// PSCC Quick Font Loc
+	AddValueToByteArray(0xFF, Header);
+	AddValueToByteArray(0xFF, Header);
+	AddValueToByteArray(0xFF, Header);
+	AddValueToByteArray(0xA8, Header);
+
+	if (LINE_COLOR_TABLE.table_size() > 0)
+	{
+		for (std::size_t i = 0; i < LINE_COLOR_TABLE.__COLOR_COUNT; i++)
+		{
+			AddValueToByteArray(LINE_COLOR_TABLE.COLORS_ARR[i], Header);
+		}
+	}
+
+	if (HEAP_ADDRESS_TABLE.table_size() > 0)
+	{
+		// Reserve space for Address Table (just initialized to zeroes, value populated in-game).
+		Header.resize(Header.size() + HEAP_ADDRESS_TABLE.address_array_size(), 0x00);
+		// Write ID Array to Header.
+		Header.insert(Header.end(), HEAP_ADDRESS_TABLE.idArray.cbegin(), HEAP_ADDRESS_TABLE.idArray.cend());
+	}
+
+	// Utility Function Dead Hook Loc
+	AddValueToByteArray(0x00000000, Header);
+
 	if (START_OF_CODE_MENU - START_OF_CODE_MENU_HEADER != Header.size()) {
-		cout << "Messed up header\n";
+		std::cout << "Messed up header\n";
 		exit(-1);
 	}
 
@@ -918,99 +1829,137 @@ void CreateMenu(Page MainPage)
 	for (auto x : Pages) {
 		x->WritePage();
 	}
+
+	std::vector<char> padding(0x10 - (MenuFile.tellp() % 0x10), 0x00);
+	copy(padding.begin(), padding.end(), ostreambuf_iterator<char>(MenuFile));
+	xml::generateAddonEmbeds(MenuFile);
+	padding.resize(0x10 - (MenuFile.tellp() % 0x10), 0x00);
+	if (padding.size() < 0x10)
+	{
+		copy(padding.begin(), padding.end(), ostreambuf_iterator<char>(MenuFile));
+	}
 }
 
 void constantOverride() {
-	ASMStart(0x80023d60);
+	ASMStart(0x80023d60, std::string("[CM: Code Menu] Constant Overrides") + 
+		std::string(xml::CONFIG_PSCC_ENABLED ? " + Run PSCC Color Update Callbacks" : ""));
 
-	int reg1 = 4;
-	int reg2 = 5;
+	int reg1 = 11;
+	int reg2 = 12;
+	int reg3 = 10;
 
-	for (auto& x : constantOverrides) {
-		LoadWordToReg(reg1, *x.index + Line::VALUE);
-		SetRegister(reg2, x.address);
-		STW(reg1, reg2, 0);
+	unsigned short prevIndexHiHalf = 0xFFFF;
+	unsigned short prevDestHiHalf = 0xFFFF;
+	for(auto& x : constantOverrides) {
+
+		unsigned short indexHiHalf = *x.index >> 0x10;
+		unsigned short indexLoHalf = (*x.index & 0xFFFF) + Line::VALUE;
+		indexHiHalf += bool(indexLoHalf >= 0x8000);
+		if (indexHiHalf != prevIndexHiHalf)
+		{
+			ADDIS(reg1, 0, indexHiHalf);
+		}
+		LWZ(reg3, reg1, indexLoHalf);
+		prevIndexHiHalf = indexHiHalf;
+
+		unsigned short destHiHalf = x.address >> 0x10;
+		unsigned short destLoHalf = x.address & 0xFFFF;
+		destHiHalf += bool(destLoHalf >= 0x8000);
+		if (destHiHalf != prevDestHiHalf)
+		{
+			ADDIS(reg2, 0, destHiHalf);
+		}
+		STW(reg3, reg2, destLoHalf);
+		prevDestHiHalf = destHiHalf;
 	}
 
-	// Universal walljumping - works, but match must be restarted. Attempted writing to 0x80FC15C0 and 0x80FC15D8, but got same result
-	LoadWordToReg(reg1, ALL_CHARS_WALLJUMP_INDEX + Line::VALUE);
-	SetRegister(reg2, 0x80FAA9A0); //walljump comparison
-	// Universal Walljump: If set, write 1
-	If(reg1, GREATER_I, 0); {
-		SetRegister(reg1, 1);	// word 1 @ $80FAA9A0, everyone can walljump
-	}
-	// If not set, write 2
-	Else(); {
-		SetRegister(reg1, 2);  // word 2 @ $80FAA9A0, normal walljump mechanics
-	} EndIf();
-	STW(reg1, reg2, 0);
+	if (xml::CONFIG_PSCC_ENABLED)
+	{
+		int menuNotLoadedLabel = GetNextLabel();
+		// If reg1 isn't already loaded with the top half of START_OF_CODE_MENU_HEADER...
+		if (prevIndexHiHalf != unsigned short(START_OF_CODE_MENU_HEADER >> 0x10))
+		{
+			// ... set up its value!
+			ADDIS(reg1, 0, START_OF_CODE_MENU_HEADER >> 0x10);
+		}
+		// Try to load START_OF_CODE_MENU from the header.
+		LWZ(reg2, reg1, (START_OF_CODE_MENU_HEADER & 0xFFFF) + 4);
+		// Use reg3 to store the full START_OF_CODE_MENU value into reg3...
+		ADDI(reg3, reg1, START_OF_CODE_MENU & 0xFFFF);
+		// ... then compare the two: the loaded value vs the expected value.
+		CMPL(reg3, reg2, 0);
+		// And if the two aren't equal, then we know the menu isn't loaded, skip to notLoaded tag!
+		JumpToLabel(menuNotLoadedLabel, bCACB_NOT_EQUAL);
 
+		// Otherwise, we're free to run our callbacks!
+		// Load the pointer for the callback array...
+		LWZ(reg2, reg1, PSCC_CALLBACK_TABLE_LOC & 0xFFFF);
+		// ...and do a register backup!
+		// Allocate a stack frame for r14 and up!
+		STWU(1, 1, -0x60);
+		// Store r0 (we need its value for the comparison at the end of this hook!)
+		STW(0, 1, 0x8);
+		// Backup and store LR
+		MFLR(0);
+		STW(0, 1, 0x4);
+		// Store r14 through r31
+		STMW(14, 1, 0xC);
+
+		// Setup our own variables starting at r31
+		int callbackArrayPtr = 31;
+		int colorTablePtr = 30;
+		int currentColorOffset = 29;
+
+		// Copy callback array pointer out of reg2
+		MR(callbackArrayPtr, reg2);
+		// Zero our Offset register
+		ADDI(currentColorOffset, 0, 0);
+		// Grab a pointer to our color table.
+		LWZ(colorTablePtr, reg1, PSCC_FLOAT_TABLE_LOC & 0xFFFF);
+
+		// Run our callback loop!
+		int callbackLoopHeadLabel = GetNextLabel();
+		int funcBadLabel = GetNextLabel();
+		Label(callbackLoopHeadLabel);
+		ADD(3, colorTablePtr, currentColorOffset);
+		LBZ(reg2, 3, 0x7);
+		CMPLI(reg2, pscc::callbackTableEntryCount, 0);
+		JumpToLabel(funcBadLabel, bCACB_GREATER_OR_EQ);
+		RLWINM(reg2, reg2, 2, 0, 0x1D);
+		LWZX(reg2, callbackArrayPtr, reg2);
+		CMPLI(reg2, 0x00, 0);
+		JumpToLabel(funcBadLabel, bCACB_EQUAL);
+		MTCTR(reg2);
+		BCTRL();
+		Label(funcBadLabel);
+		ADDI(currentColorOffset, currentColorOffset, pscc::colorTableEntrySizeInBytes);
+		CMPLI(currentColorOffset, pscc::getColorTableSizeInBytes(), 0);
+		JumpToLabel(callbackLoopHeadLabel, bCACB_LESSER);
+		
+		// Finally, restore register backups!
+		// Restore LR
+		LWZ(0, 1, 0x4);
+		MTLR(0);
+		// Restore r0
+		LWZ(0, 1, 0x8);
+		// Restore r14 through r31
+		LMW(14, 1, 0xC);
+		// Deallocate stack frame!
+		ADDI(1, 1, 0x60);
+		Label(menuNotLoadedLabel);
+	}
+	
 	ASMEnd(0x2c000000); //cmpwi, r0, 0
 }
 
 void ControlCodeMenu()
 {
-	ASMStart(0x80029574);
-	vector<int> FPRegs(14);
-	iota(FPRegs.begin(), FPRegs.end(), 0);
-	SaveRegisters(FPRegs);
+	// Establish Subroutines!
+	ResetLineSubroutineLabel = GetNextLabel();
+	ModifyLineValueSubroutineLabel = GetNextLabel();
 
-	if (SHIELD_RED_1 != -1) {
-		SetRegister(5, 0x80f574c0 + 0x88);
-		SetRegister(3, SHIELD_RED_1 + 8 + 3);
-		LBZ(4, 3, 0);
-		STB(4, 5, 0);
-		SetRegister(3, SHIELD_GREEN_1 + 8 + 3);
-		LBZ(4, 3, 0);
-		STB(4, 5, 1);
-		SetRegister(3, SHIELD_BLUE_1 + 8 + 3);
-		LBZ(4, 3, 0);
-		STB(4, 5, 2);
-		SetRegister(3, SHIELD_ALPHA_1 + 8 + 3);
-		LBZ(4, 3, 0);
-		STB(4, 5, 3);
-		SetRegister(5, 0x80f574c0 + 0x90);
-		SetRegister(3, SHIELD_RED_2 + 8 + 3);
-		LBZ(4, 3, 0);
-		STB(4, 5, 0);
-		SetRegister(3, SHIELD_GREEN_2 + 8 + 3);
-		LBZ(4, 3, 0);
-		STB(4, 5, 1);
-		SetRegister(3, SHIELD_BLUE_2 + 8 + 3);
-		LBZ(4, 3, 0);
-		STB(4, 5, 2);
-		SetRegister(3, SHIELD_ALPHA_2 + 8 + 3);
-		LBZ(4, 3, 0);
-		STB(4, 5, 3);
-		SetRegister(5, 0x80f574c0 + 0xA0);
-		SetRegister(3, SHIELD_RED_3 + 8 + 3);
-		LBZ(4, 3, 0);
-		STB(4, 5, 0);
-		SetRegister(3, SHIELD_GREEN_3 + 8 + 3);
-		LBZ(4, 3, 0);
-		STB(4, 5, 1);
-		SetRegister(3, SHIELD_BLUE_3 + 8 + 3);
-		LBZ(4, 3, 0);
-		STB(4, 5, 2);
-		SetRegister(3, SHIELD_ALPHA_3 + 8 + 3);
-		LBZ(4, 3, 0);
-		STB(4, 5, 3);
-		SetRegister(5, 0x80f574c0 + 0xA8);
-		SetRegister(3, SHIELD_RED_4 + 8 + 3);
-		LBZ(4, 3, 0);
-		STB(4, 5, 0);
-		SetRegister(3, SHIELD_GREEN_4 + 8 + 3);
-		LBZ(4, 3, 0);
-		STB(4, 5, 1);
-		SetRegister(3, SHIELD_BLUE_4 + 8 + 3);
-		LBZ(4, 3, 0);
-		STB(4, 5, 2);
-		SetRegister(3, SHIELD_ALPHA_4 + 8 + 3);
-		LBZ(4, 3, 0);
-		STB(4, 5, 3);
-	}
-
-
+	ASMStart(0x80029574, "[CM: Code Menu] Control Code Menu");
+	SaveRegisters(14);
 
 	printMenuSetters();
 
@@ -1034,20 +1983,16 @@ void ControlCodeMenu()
 
 	int NotLoaded = GetNextLabel();
 
-	//Prevents Code Menu from booting if it doesn't match a specified string (lol)
-#if BUILD_TYPE == PROJECT_PLUS
-	LoadHalfToReg(Reg1, MENU_TITLE_CHECK_LOCATION + 7 + Line::COMMENT_LINE_TEXT_START);
-	If(Reg1, NOT_EQUAL_I_L, 0x2b20); //il
-	{
-		JumpToLabel(NotLoaded);
-	}EndIf();
-#else
-	LoadHalfToReg(Reg1, MENU_TITLE_CHECK_LOCATION + 7 + Line::COMMENT_LINE_TEXT_START);
-	If(Reg1, NOT_EQUAL_I_L, 0x5445); //TE
-	{
-		JumpToLabel(NotLoaded);
-	}EndIf();
-#endif
+	// Rewritten check for whether or not menu is loaded!
+	// Load the main page pointer from just past the Menu Header Loc into Reg4 (this should be START_OF_CODE_MENU).
+	ADDIS(Reg1, 0, START_OF_CODE_MENU_HEADER >> 0x10);
+	LWZ(Reg4, Reg1, (START_OF_CODE_MENU_HEADER & 0xFFFF) + 4);
+	// Add the bottom half of START_OF_CODE_MENU to Reg1, so Reg1 should *also* now be START_OF_CODE_MENU.
+	ADDI(Reg1, Reg1, START_OF_CODE_MENU & 0xFFFF);
+	// Compare the two as unsigned integers.
+	CMPL(Reg1, Reg4, EQUAL_L);
+	// And if the two aren't equal, then we know the menu isn't loaded, skip to notLoaded tag!
+	JumpToLabel(NotLoaded, bCACB_NOT_EQUAL);
 
 	LoadWordToReg(Reg4, HUD_DISPLAY_INDEX + Line::VALUE);
 	If(Reg4, EQUAL_I, 0);
@@ -1173,6 +2118,7 @@ void ControlCodeMenu()
 
 	LoadWordToReg(Reg3, Reg5, IS_DEBUG_PAUSED);
 	
+	// If we're hovering over the Code Menu button in the Main Menu...
 	If(OpenFlagReg, EQUAL_I, CODE_MENU_PRIMED); {
 		//check for A press
 		SetRegister(OpenFlagReg, CODE_MENU_CLOSED);
@@ -1182,20 +2128,36 @@ void ControlCodeMenu()
 			//A or start is pressed
 			SetRegister(OpenFlagReg, CODE_MENU_TRIGGERED); //set open
 		}EndIf();
-	}EndIf();
-
-	if (CODE_MENU_ACTIVATION_SETTING_INDEX != -1) {
-		LoadWordToReg(Reg2, IS_IN_GAME_FLAG);
-		If(Reg2, EQUAL_I, 1); {
-			LoadWordToReg(Reg2, CODE_MENU_ACTIVATION_SETTING_INDEX + Line::VALUE);
-			If(Reg2, NOT_EQUAL_I, 0); {
-				LoadWordToReg(Reg2, CODE_MENU_CONTROL_FLAG);
-				If(Reg2, EQUAL_I, CODE_MENU_CLOSED); {
-					SetRegister(OpenFlagReg, CODE_MENU_CLOSED);
-				}EndIf();
-			}EndIf();
-		}EndIf();
 	}
+	// Additionally, if the Activation Setting line is present in the menu...
+	if (CODE_MENU_ACTIVATION_SETTING_INDEX != -1) {
+		// ... do another round of checks if the Code Menu has just been triggered via input.
+		Else(); If(OpenFlagReg, EQUAL_I, CODE_MENU_TRIGGERED);
+
+		int codeMenuEnabledLabel = GetNextLabel();
+
+		// Load the Activation Flag...
+		LoadWordToReg(Reg2, CODE_MENU_ACTIVATION_SETTING_INDEX + Line::VALUE);
+		// ... and do a single comparison against 1, since that'll do enough to distinguish 0, 1, and 2
+		CMPLI(Reg2, 1, 1);
+		// If we're on setting 0 (ie. Default), then code menu is always enabled.
+		JumpToLabel(codeMenuEnabledLabel, bCACB_LESSER.inConditionRegField(1));
+
+		// Otherwise, if we're in-game...
+		LoadWordToReg(Reg2, IS_IN_GAME_FLAG);
+		CMPLI(Reg2, 1, 0);
+		// ... AND we're on setting 1 (ie. 3.6)...	
+		CRANDC(EQ, crBitInCRF(EQ, 1), EQ);
+		// ... then code menu is enabled.
+		JumpToLabel(codeMenuEnabledLabel, bCACB_EQUAL);
+
+		// Otherwise, if we're on option 2 (ie. Off), or option 1 and in-game, we'll prevent the menu from opening.
+		SetRegister(OpenFlagReg, CODE_MENU_CLOSED);
+
+		Label(codeMenuEnabledLabel);
+		EndIf();
+	}
+	EndIf();
 
 	If(OpenFlagReg, EQUAL_I, CODE_MENU_TRIGGERED); {
 		SetRegister(Reg2, OLD_DEBUG_STATE_LOC);
@@ -1209,6 +2171,10 @@ void ControlCodeMenu()
 
 		SetRegister(Reg2, CODE_MENU_BUTTON_MASK_LOC);
 		STW(ButtonReg, Reg2, 0);
+
+		// Play sound for opening menu.
+		ADDI(4, 0, sii_SND_SE_SYSTEM_INFOWINDOW_OPEN);
+		JumpToLabel(getPlaySELabel(), bCACB_UNSPECIFIED, 1);
 	}EndIf();
 
 	//get only pressed button
@@ -1240,7 +2206,7 @@ void ControlCodeMenu()
 
 		GetActionFromInputs(ButtonReg, ControlStickXReg, ControlStickYReg, ActionReg);
 
-		ExecuteAction(ActionReg);
+		ExecuteAction(ActionReg, Reg1);
 
 	}EndIf(); //run logic
 	
@@ -1302,7 +2268,7 @@ void ControlCodeMenu()
 			ANDIS(Reg1, Reg1, ~0x0010); //allow frame advance
 			ADDI(Reg4, Reg4, FRAME_ADVANCE_NUM_WAIT_FRAMES);
 
-			CounterLoop(Reg7, 0, 32, 8); //Suggested Fix
+			CounterLoop(Reg7, 0, 32, 8); //The actual suggested fix
 			{
 				LHZX(Reg8, Reg3, Reg7);
 				ANDI(Reg8, Reg8, ~0x0010);
@@ -1317,12 +2283,20 @@ void ControlCodeMenu()
 	If(OpenFlagReg, EQUAL_I, CODE_MENU_OPEN); {
 		SetRegister(Reg2, -1); //stop all debug commands
 	}EndIf();
-	CounterLoop(Reg7, 0, 32, 8);
+
+	//Eon's Project+ 2.28 Fix
+	SetRegister(Reg4, 0);
+	While(Reg4, NOT_EQUAL_I, 32);
 	{
-		LWZX(Reg8, Reg3, Reg7);
-		OR(Reg8, Reg8, Reg2);
-		STWX(Reg8, Reg3, Reg7);
-	} CounterLoopEnd();
+		LWZX(Reg1, Reg3, Reg4);
+		OR(Reg1, Reg2, Reg1);
+		STWX(Reg1, Reg3, Reg4);
+		ADDI(Reg4, Reg4, 0x8);
+	}
+	EndWhile();
+	//Lines that were removed by Eon's P+ 2.28 Fix. 
+	//OR(Reg1, Reg1, Reg2);
+	//STW(Reg1, Reg3, 0);
 	//stop Z and start if in menu
 
 	ApplyMenuSetting(DEBUG_MODE_INDEX, 0x80583FFC + 3, Reg1, Reg2, 1);
@@ -1344,37 +2318,6 @@ void ControlCodeMenu()
 
 	//dumb solution to code menu closing problem
 	LoadWordToReg(OpenFlagReg, CODE_MENU_CONTROL_FLAG);
-
-	if (CODE_MENU_ACTIVATION_SETTING_INDEX != -1) {
-		If(OpenFlagReg, EQUAL_I, CODE_MENU_CLOSING); {
-			LoadWordToReg(Reg1, CODE_MENU_ACTIVATION_SETTING_INDEX + Line::VALUE);
-			If(Reg1, EQUAL_I, 2); {
-				//save certain settings
-				SetRegister(Reg7, CODE_MENU_ACTIVATION_SETTING_INDEX);
-				SetRegister(Reg8, AUTO_SAVE_REPLAY_INDEX);
-				SetRegister(Reg9, AUTO_SKIP_TO_CSS_INDEX);
-				LWZ(8, Reg7, Line::VALUE);
-				LBZ(9, Reg7, Line::COLOR);
-				LWZ(4, Reg8, Line::VALUE);
-				LBZ(5, Reg8, Line::COLOR);
-				LWZ(6, Reg9, Line::VALUE);
-				LBZ(7, Reg9, Line::COLOR);
-
-				LoadWordToReg(Reg2, MAIN_PAGE_PTR_LOC);
-				SetRegister(Reg1, RESET_LINES_STACK_LOC);
-				PushOnStack(Reg2, Reg1);
-				ResetPage(Reg1, Reg2, Reg3, Reg4, Reg5, Reg6, 3);
-
-				//restore certain settings
-				STW(8, Reg7, Line::VALUE);
-				STB(9, Reg7, Line::COLOR);
-				STW(4, Reg8, Line::VALUE);
-				STB(5, Reg8, Line::COLOR);
-				STW(6, Reg9, Line::VALUE);
-				STB(7, Reg9, Line::COLOR);
-			}EndIf();
-		}EndIf();
-	}
 
 	//port based codes
 	LoadWordToReg(Reg7, IS_IN_GAME_FLAG);
@@ -1410,7 +2353,7 @@ void ControlCodeMenu()
 
 									SetRegister(Reg3, 0x80615520);
 									RLWINM(Reg4, Reg8, 2, 0, 31); //<< 2
-									ADD(Reg3, Reg3, Reg4); //Reg8 changed to Reg4, P+ 2.28 fix
+									ADD(Reg3, Reg3, Reg4);	//Reg8 changed to Reg4, P+ 2.28 fix
 									LWZ(Reg3, Reg3, 0x4C);
 
 									FCTIWZ(0, 1);
@@ -1476,18 +2419,32 @@ void ControlCodeMenu()
 							RLWINM(5, 5, 2, 0, 31); //<<2
 							LBZ(4, Reg2, 0); //get current ID
 							ADDI(5, 5, Selection::SELECTION_LINE_OFFSETS_START + 2);
-							LHZX(5, 3, 5);
-							If(4, NOT_EQUAL, 5); {
+							LWZ(Reg1, 3, Selection::SELECTION_LINE_SOURCE_SELECTION_INDEX);
+							LHZX(5, Reg1, 5);
+							If(4, NOT_EQUAL, 5); { // If the New ID and Old ID don't match...
 								SetRegister(Reg1, 0);
-								STB(5, Reg2, 0);
+								STB(5, Reg2, 0); // Overwrite Old ID with New one
+								// This seems to trigger a line at 0x809463C4 in "processBegin/[stLoaderPlayer]/st_loader_player.o" (0x80954350 in Ghidra)
+								// which ultimately leads to the line:
+								//		(*(code *)this->vtable->stLoaderPlayer$$removeEntity)(this); Starting @ 0x809543d4 in Ghidra
+								// This, I assume, is the thing that kills the entity and prompts spawning the new one.
+								// There's *also*, however, 0x80946358 (Ghidra: 0x809542e4), which directly checks whether or not the Slot ID
+								// recorded in the PlayerInitStruct is different from the currently selected one, along with some other conditions.
+								// If so, then we run the following:
+								//		(*(code *)this->vtable->stLoaderPlayer$$removeEntity)(this); Starting @ 0x8095431c in Ghidra
+								// Either one of these could be the thing responsible for ultimately causing the change to happen,
+								// not sure which it is for sure.
+								// In either case, should end up calling "removeEntity/[stLoaderPlayer]" 0x80948da8 (0x80956d34 in Ghidra)
+								// Messing with the r3 value at 0x809463C4 does prompt a reload
+								// Messing with the r0 value at 0x80946358 DOES NOT! Neither in SSE, nor in VS
 
 								SetRegister(Reg3, 0x43AD8);
-								LoadWordToReg(Reg4, 0x805A00E0);
-								LWZ(Reg4, Reg4, 0x10);
-								ADD(Reg4, Reg4, Reg3);
-								LWZ(Reg3, CharacterBufferReg, CHR_BUFFER_PORT_OFFSET);
-								MULLI(Reg3, Reg3, 0x5C);
-								STWX(Reg1, Reg4, Reg3);
+								LoadWordToReg(Reg4, 0x805A00E0); // Get ptr to GameGlobal Struct
+								LWZ(Reg4, Reg4, 0x10); // Get ptr to gmSelCharData (0x90180b40 in testing)
+								ADD(Reg4, Reg4, Reg3); // Add 0x43AD8 to addr of this struct (901c4618)? Way beyond the listed range in Ghidra
+								LWZ(Reg3, CharacterBufferReg, CHR_BUFFER_PORT_OFFSET); // Get port for character to change...
+								MULLI(Reg3, Reg3, 0x5C); // ... and multiply it by 0x5C, probably to index into a list of entries
+								STWX(Reg1, Reg4, Reg3); // Write 0 into (&gmSelCharData + 0x43AD8 + OffsetIntoListForTargetPort), Setting to 1 gives RAlt?
 
 								STB(Reg1, Reg2, 5); //force costume to 0
 								STB(Reg1, Reg2, 6); //force HUD to 0
@@ -1625,7 +2582,13 @@ void ControlCodeMenu()
 	Label(NotLoaded);
 
 	RestoreRegisters();
-	ASMEnd(0x4e800020); //blr
+	BLR();
+
+	// Beginning of Subroutines
+	ModifyLineValueSubroutine();
+	ResetLineSubroutine(Reg1);
+
+	ASMEnd();
 }
 
 void ApplyMenuSetting(int Index, int Destination, int reg1, int reg2, int size)
@@ -1639,7 +2602,11 @@ void ApplyMenuSetting(int Index, int Destination, int reg1, int reg2, int size)
 	}
 }
 
-void ExecuteAction(int ActionReg)
+/* 
+// This was written as a test of the new Switch Statement implementation!
+// I'd hoped this would shake out to be smaller, but it actually winds up a fair bit larger unfortunately.
+// Still an interesting exploration, and a good demo of how the Switch system is used, so I'm leaving this here.
+void switchTest_ExecuteAction(int ActionReg)
 {
 	int PageReg = 4;
 	int LineReg = 5;
@@ -1650,6 +2617,87 @@ void ExecuteAction(int ActionReg)
 	int TempReg4 = 10;
 	int TempReg5 = 11;
 	int TempReg6 = 12;
+
+	LoadWordToReg(PageReg, CURRENT_PAGE_PTR_LOC);
+	LWZ(LineReg, PageReg, Page::CURRENT_LINE_OFFSET);
+	ADD(LineReg, LineReg, PageReg);
+	LBZ(TypeReg, LineReg, Line::TYPE);
+	ADDI(TempReg1, 0, 0);
+	ADDIS(TempReg2, 0, START_OF_CODE_MENU_HEADER >> 0x10);
+
+	switchTable<8> menuActionSwitch;
+	menuActionSwitch.init(ActionReg, 10, 11, 12);
+	menuActionSwitch.caseStart(MOVE_DOWN);
+	{
+		ADDI(TempReg1, 0, 1);
+		menuActionSwitch.caseEnd();
+	}
+	menuActionSwitch.caseStart(MOVE_UP);
+	{
+		Move(LineReg, PageReg, TempReg1, TempReg2, TempReg3);
+		menuActionSwitch.caseBreak();
+	}
+	menuActionSwitch.caseStart(DECREMENT);
+	{
+		ADDI(TempReg1, 0, 1);
+		menuActionSwitch.caseEnd();
+	}
+	menuActionSwitch.caseStart(INCREMENT);
+	{
+		JumpToLabel(ModifyLineValueSubroutineLabel, bCACB_UNSPECIFIED, 1);
+		menuActionSwitch.caseBreak();
+	}
+	menuActionSwitch.caseStart(ENTER_SUB_MENU);
+	{
+		CMPLI(TypeReg, SUB_MENU_LINE, 0);
+		JumpToLabel(menuActionSwitch.getCaseLabel(INCREMENT), bCACB_NOT_EQUAL);
+		EnterMenu(LineReg, PageReg, TypeReg, TempReg1, TempReg2);
+		menuActionSwitch.caseBreak();
+	}
+	menuActionSwitch.caseStart(RESET_LINE);
+	{
+		ORI(TempReg1, TempReg2, RESET_LINES_STACK_LOC & 0xFFFF);
+		ResetLine(LineReg, PageReg, TempReg1, TypeReg, TempReg2, TempReg3, TempReg4, 0);
+		menuActionSwitch.caseBreak();
+	}
+	menuActionSwitch.caseStart(RESET_PAGE);
+	{
+		ORI(TempReg1, TempReg2, RESET_LINES_STACK_LOC & 0xFFFF);
+		PushOnStack(PageReg, TempReg1, TempReg2);
+		ResetPage(TempReg1, TempReg2, TempReg3, TempReg4, TempReg5, TempReg6, 3);
+		menuActionSwitch.caseBreak();
+	}
+	menuActionSwitch.caseStart(LEAVE_SUB_MENU);
+	{
+		LeaveMenu(PageReg, TempReg1, TempReg2, TempReg3, TempReg4, TempReg5, TempReg6, ActionReg);
+		menuActionSwitch.caseEnd();
+	}
+	menuActionSwitch.defaultStart(); menuActionSwitch.defaultEnd();
+	menuActionSwitch.finalize();
+
+	If(ActionReg, EQUAL_I_L, EXIT_MENU);
+	{
+		SetRegister(TempReg1, CODE_MENU_CLOSING);
+		ORI(TempReg2, TempReg2, CODE_MENU_CONTROL_FLAG & 0xFFFF);
+		STW(TempReg1, TempReg2, 0);
+		ExitMenu();
+	}EndIf();
+}
+*/
+
+void ExecuteAction(int ActionReg, int ResetAccumulatorReg)
+{
+	int LineReg = 3;
+	int TypeReg = 4;
+	int PageReg = 5;
+
+	int TempReg1 = 6;
+	int TempReg2 = 7;
+	int TempReg3 = 8;
+	int TempReg4 = 9;
+	int TempReg5 = 10;
+	int TempReg6 = 11;
+	int TempReg7 = 12;
 
 	int move = GetNextLabel();
 
@@ -1671,34 +2719,27 @@ void ExecuteAction(int ActionReg)
 
 		Label(move);
 		Move(LineReg, PageReg, TempReg1, TempReg2, TempReg3);
-	}EndIf();
 
+		// Play sound for moving to a different line.
+		ADDI(4, 0, sii_SND_SE_SYSTEM_CURSOR);
+		JumpToLabel(getPlaySELabel(), bCACB_UNSPECIFIED, 1);
+	}EndIf();
 
 	//change value
-	If(ActionReg, EQUAL_I, INCREMENT); //increment
-	IncreaseValue(LineReg, PageReg, TypeReg, TempReg1, TempReg2, TempReg3, TempReg4, TempReg5);
-	EndIf(); //increment
-	If(ActionReg, EQUAL_I, ENTER_SUB_MENU); //increment, if A is pressed
-	IncreaseValue(LineReg, PageReg, TypeReg, TempReg1, TempReg2, TempReg3, TempReg4, TempReg5);
-	EndIf(); //increment
+	// Assume by default that we're gonna increment here, so set r6 to 0!
+	ADDI(6, 0, 0);
+	// And if action is INCREMENT or ENTER_SUB_MENU...
+	CMPLI(ActionReg, INCREMENT, 0);
+	CMPLI(ActionReg, ENTER_SUB_MENU, 1);
+	CROR(EQ, EQ, crBitInCRF(EQ, 1));
+	// ... then branch.
+	JumpToLabel(ModifyLineValueSubroutineLabel, bCACB_EQUAL, 1);
 	
-	If(ActionReg, EQUAL_I, DECREMENT); //decrement
-	DecreaseValue(LineReg, PageReg, TypeReg, TempReg1, TempReg2, TempReg3, TempReg4, TempReg5);
-	EndIf(); //decrement
-
-
-	//reset to defaults
-	SetRegister(TempReg1, RESET_LINES_STACK_LOC);
-	If(ActionReg, EQUAL_I, RESET_LINE); {
-		ResetLine(LineReg, PageReg, TempReg1, TypeReg, TempReg2, TempReg3, TempReg4);
-	}EndIf();
-
-	If(ActionReg, EQUAL_I, RESET_PAGE); {
-		PushOnStack(PageReg, TempReg1, TempReg2);
-	}EndIf();
-
-	//reset page if applicable
-	ResetPage(TempReg1, TempReg2, TempReg3, TempReg4, TempReg5, TempReg6, 3);
+	// If we're decrementing though set r6 so we decrement instead...
+	ADDI(6, 0, 1);
+	// ... and attempt the branch!
+	CMPLI(ActionReg, DECREMENT, 0);
+	JumpToLabel(ModifyLineValueSubroutineLabel, bCACB_EQUAL, 1);
 
 	//navigate menu
 	If(ActionReg, EQUAL_I, ENTER_SUB_MENU); {
@@ -1714,13 +2755,77 @@ void ExecuteAction(int ActionReg)
 		SetRegister(TempReg2, CODE_MENU_CONTROL_FLAG);
 		STW(TempReg1, TempReg2, 0);
 		ExitMenu();
+
+		// Play sound for closing menu.
+		ADDI(4, 0, sii_SND_SE_SYSTEM_PLATE_CATCH);
+		JumpToLabel(getPlaySELabel(), bCACB_UNSPECIFIED, 1);
 	}EndIf();
+
+	// --- Reset Actions! ---
+	// These are last because the ResetPage code modifies the Line, Type, and Page registers.
+	// Attempting to perform an action after that without first reacquiring those registers' values will cause undefined behavior!
+	// Set Stack Pointer, since we'll need this for all of what we're about to do.
+	SetRegister(7, RESET_LINES_STACK_LOC);
+	// Also zero the reset line accumulator, we need this to know whether to play the reset sound afterwards!
+	ADDI(ResetAccumulatorReg, 0, 0);
+
+	// If we're resetting a line...
+	CMPLI(ActionReg, RESET_LINE, 0);
+	// ... then set IsIndirect to 0 (since we're resetting the line directly)...
+	ADDI(6, 0, 0);
+	// ... and call the subroutine. Importantly, if the current line is a subpage, it'll get pushed onto the reset stack!
+	JumpToLabel(ResetLineSubroutineLabel, bCACB_EQUAL, 1);
+
+	// If we instead are resetting a page...
+	If(ActionReg, EQUAL_I, RESET_PAGE); {
+		// ... then push the current page's ptr onto the reset stack.
+		PushOnStack(PageReg, 7, 8);
+	}EndIf();
+
+	// Iterate through any pages on the reset stack, and reset the lines therein!
+	// Note: This modifes the Line, Type, and Page registers as it iterates; don't add actions beneath this unless you reload those values!
+	ResetPage();
+
+	// If the Reset Accumulator is non-zero, in one of the previous actions we reset a line!
+	CMPLI(ResetAccumulatorReg, 0, 0);
+	// Queue up the reset sound's ID...
+	ADDI(4, 0, sii_SND_SE_SYSTEM_CANCEL);
+	// ... and play it if the Accumulator wasn't 0 (ie. the previous check against 0 returned not equal).
+	JumpToLabel(getPlaySELabel(), bCACB_NOT_EQUAL, 1);
 }
 
-void ResetLine(int LineReg, int PageReg, int StackReg, int TypeReg, int TempReg1, int TempReg2, int TempReg3)
+// r3 = LineReg, r4 = LineTypeReg, r5 = PageReg, r6 = IsIndirectReg, r7 = StackReg, r8 - r12 = Work Regs (modifed)
+int ResetLineSubroutineLabel = INT_MAX;
+void ResetLineSubroutine(int ResetAccumulatorReg)
 {
+	int LineReg = 3;
+	int TypeReg = 4;
+	int PageReg = 5;
+	int IsIndirectReg = 6;
+	int StackReg = 7;
+
+	int TempReg1 = 8;
+	int TempReg2 = 9;
+	int TempReg3 = 10;
+
+	Label(ResetLineSubroutineLabel);
+
+	int notIndirectLabel = GetNextLabel();
+	int setPageLineColorLabel = GetNextLabel();
+
+	// Grab Line Color early, since whether we're direct or not we'll need it for setting the page color!
 	LBZ(TempReg2, LineReg, Line::COLOR);
+
+	CMPLI(IsIndirectReg, 1, 0);
+	JumpToLabel(notIndirectLabel, bCACB_NOT_EQUAL);
+	LBZ(TempReg3, LineReg, Line::FLAGS);
+	ANDI(TempReg3, TempReg3, Line::LINE_FLAGS_FIELDS::LINE_FLAG_IGNORE_INDIRECT_RESET);
+	JumpToLabel(setPageLineColorLabel, bCACB_NOT_EQUAL);
+
+	Label(notIndirectLabel);
 	LWZ(TempReg1, PageReg, Page::NUM_CHANGED_LINES);
+	
+	// Load the changed bit of the line's color into TempReg3, will be 1 if changed, 0 otherwise.
 	RLWINM(TempReg3, TempReg2, 29, 31, 31);
 	ANDI(TempReg2, TempReg2, ~0x8);
 	SUBF(TempReg1, TempReg1, TempReg3);
@@ -1728,26 +2833,66 @@ void ResetLine(int LineReg, int PageReg, int StackReg, int TypeReg, int TempReg1
 	STW(TempReg1, PageReg, Page::NUM_CHANGED_LINES);
 
 	If(TypeReg, LESS_OR_EQUAL_I, HAS_VALUE_LIMIT); {
+		// Add the changed bit to the ResetAccumulator to tally that a line's value was reset.
+		ADD(ResetAccumulatorReg, ResetAccumulatorReg, TempReg3);
 		LWZ(TempReg1, LineReg, Line::DEFAULT);
 		STW(TempReg1, LineReg, Line::VALUE);
 	}Else(); If(TypeReg, EQUAL_I, SUB_MENU_LINE); {
 		LHZ(TempReg1, LineReg, Line::SUB_MENU);
 		ADD(TempReg1, TempReg1, PageReg);
-		PushOnStack(TempReg1, StackReg, TempReg2);
+		PushOnStack(TempReg1, StackReg, TempReg3);
 	}EndIf(); EndIf();
+
+	Label(setPageLineColorLabel);
+	// Load the current page's submenu line...
+	LWZ(TempReg3, PageReg, Page::CALLED_FROM_LINE);
+	// ... and if no such line existed...
+	CMPI(TempReg3, 0xFFFF, 0);
+	// ... then return early to skip the below.
+	BCLR(bCACB_EQUAL);
+	// Otherwise though, grab that line's color value...
+	LBZ(TempReg1, TempReg3, Line::COLOR);
+	// ... and isolate the changed bit.
+	ANDI(TempReg2, TempReg2, 0x8);
+	// OR that into the parent page's line color...
+	OR(TempReg1, TempReg1, TempReg2);
+	// ... and write it into place!
+	STB(TempReg1, TempReg3, Line::COLOR);
+
+	BLR();
 }
 
-void ResetPage(int StackReg, int TempReg1, int TempReg2, int TempReg3, int TempReg4, int TempReg5, int TempReg6)
+// r7 = StackReg, r3 - r6, r8 - r12 = Work Regs (modifed)
+void ResetPage()
 {
-	IterateStack(TempReg1, StackReg, TempReg2); {
-		SetRegister(TempReg6, 1);
-		ADDI(TempReg2, TempReg1, Page::FIRST_LINE_OFFSET); //first line
-		While(TempReg6, NOT_EQUAL_I, 0); {
-			LBZ(TempReg3, TempReg2, Line::TYPE);
-			ResetLine(TempReg2, TempReg1, StackReg, TempReg3, TempReg4, TempReg5, TempReg6);
+	int LineReg = 3;
+	int TypeReg = 4;
+	int PageReg = 5;
+	int IsIndirectReg = 6;
+	int StackReg = 7;
 
-			LHZ(TempReg6, TempReg2, Line::SIZE);
-			ADD(TempReg2, TempReg2, TempReg6); //next line
+	int ItrReg1 = 12;
+
+	// Set IsIndirect flag to 1 (we only need to do this once, we guarantee that the register won't be modified in the loop.
+	ADDI(IsIndirectReg, 0, 1);
+
+	// Iterate through each page address pushed onto the stack (skipping of course if there are none).
+	IterateStack(PageReg, StackReg, ItrReg1);
+	{
+		// Point LineReg to this page's first line.
+		ADDI(LineReg, PageReg, Page::FIRST_LINE_OFFSET); 
+		// Get this first line's size, only do loop if that size isn't 0 (ie. line exists).
+		LHZ(ItrReg1, LineReg, Line::SIZE);
+		// Then iterate through each line in the page.
+		While(ItrReg1, NOT_EQUAL_I, 0); 
+		{
+			// Load the line's Type into TypeReg
+			LBZ(TypeReg, LineReg, Line::TYPE);
+			// ... and call the ResetLine Subroutine!
+			JumpToLabel(ResetLineSubroutineLabel, bCACB_UNSPECIFIED, 1);
+
+			// Use the Size in ItrReg to push LineReg to next line, and load that next line's size.
+			LHZUX(ItrReg1, LineReg, ItrReg1); 
 		}EndWhile();
 	}IterateStackEnd();
 }
@@ -1768,161 +2913,173 @@ void EnterMenu(int LineReg, int PageReg, int TypeReg, int TempReg1, int TempReg2
 		STW(TempReg1, TempReg2, Page::PREV_PAGE);
 		SetRegister(TempReg1, CURRENT_PAGE_PTR_LOC);
 		STW(TempReg2, TempReg1, 0);
+
+		// Play sound for entering page.
+		ADDI(4, 0, sii_SND_SE_SYSTEM_PAGE_CHANGE);
+		JumpToLabel(getPlaySELabel(), bCACB_UNSPECIFIED, 1);
 	}EndIf();
 }
 
 void LeaveMenu(int PageReg, int TempReg1, int TempReg2, int TempReg3, int TempReg4, int TempReg5, int TempReg6, int ActionReg)
 {
 	LWZ(TempReg1, PageReg, Page::PREV_PAGE);
-	If(TempReg1, EQUAL_I, 0); {
-		/*LoadWordToReg(TempReg1, TempReg2, PREV_CODE_MENU_CONTROL_FLAG);
-		STW(TempReg1, TempReg2, CODE_MENU_CONTROL_FLAG - PREV_CODE_MENU_CONTROL_FLAG);
-		LoadWordToReg(TempReg1, OLD_DEBUG_STATE_LOC);
-		SetRegister(TempReg2, IS_DEBUG_PAUSED);
-		STW(TempReg1, TempReg2, 0);*/
-		SetRegister(ActionReg, EXIT_MENU);
-	}Else(); {
-		ADD(TempReg2, PageReg, TempReg1);
-		SetRegister(TempReg1, CURRENT_PAGE_PTR_LOC);
-		STW(TempReg2, TempReg1, 0);
+	ADD(TempReg2, PageReg, TempReg1);
+	SetRegister(TempReg1, CURRENT_PAGE_PTR_LOC);
+	STW(TempReg2, TempReg1, 0);
 
-		//reg2 == super page
-		LWZ(TempReg1, TempReg2, Page::CURRENT_LINE_OFFSET);
-		ADD(TempReg1, TempReg1, TempReg2); //super page current line
-		LBZ(TempReg3, TempReg1, Line::COLOR); //color of super line
-		RLWINM(TempReg4, TempReg3, 29, 31, 31);
-		LWZ(TempReg5, TempReg2, Page::NUM_CHANGED_LINES); //super page num changed lines
-		ANDI(TempReg3, TempReg3, ~0x8);
-		SUBF(TempReg5, TempReg5, TempReg4);
-		LWZ(TempReg4, PageReg, Page::NUM_CHANGED_LINES);
-		SetRegister(TempReg6, 0);
-		ANDI(TempReg4, TempReg4, 0x1F);
-		If(TempReg4, NOT_EQUAL_I, 0); {
-			SetRegister(TempReg6, 1);
-		}EndIf();
-		ADD(TempReg5, TempReg5, TempReg6);
-		RLWINM(TempReg6, TempReg6, 3, 0, 31); //<<3
-		STW(TempReg5, TempReg2, Page::NUM_CHANGED_LINES);
-		OR(TempReg3, TempReg3, TempReg6);
-		STB(TempReg3, TempReg1, Line::COLOR);
-	}EndIf();
+	//reg2 == super page
+	LWZ(TempReg1, TempReg2, Page::CURRENT_LINE_OFFSET);
+	ADD(TempReg1, TempReg1, TempReg2); //super page current line
+	LBZ(TempReg3, TempReg1, Line::COLOR); //color of super line
+	RLWINM(TempReg4, TempReg3, 29, 31, 31);
+	LWZ(TempReg5, TempReg2, Page::NUM_CHANGED_LINES); //super page num changed lines
+	ANDI(TempReg3, TempReg3, ~0x8);
+	SUBF(TempReg5, TempReg5, TempReg4);
+	LWZ(TempReg4, PageReg, Page::NUM_CHANGED_LINES);
+	SetRegister(TempReg6, 0);
+	ANDI(TempReg4, TempReg4, 0x1F);
+	BC(2, bCACB_EQUAL);
+	SetRegister(TempReg6, 1);
+	ADD(TempReg5, TempReg5, TempReg6);
+	RLWINM(TempReg6, TempReg6, 3, 0, 31); //<<3
+	STW(TempReg5, TempReg2, Page::NUM_CHANGED_LINES);
+	OR(TempReg3, TempReg3, TempReg6);
+	STB(TempReg3, TempReg1, Line::COLOR);
+
+	// Play sound for leaving page.
+	ADDI(4, 0, sii_SND_SE_SYSTEM_CURSOR_L);
+	JumpToLabel(getPlaySELabel(), bCACB_UNSPECIFIED, 1);
 }
 
-void DecreaseValue(int LineReg, int PageReg, int TypeReg, int TempReg1, int TempReg2, int TempReg3, int TempReg4, int TempReg5)
+// r3 = LineReg, r4 = LineTypeReg, r5 = PageReg, r6 = DoDecrReg, r7 - r12 = Work Regs (modifed)
+int ModifyLineValueSubroutineLabel = INT_MAX;
+void ModifyLineValueSubroutine()
 {
-	If(TypeReg, LESS_OR_EQUAL_I, HAS_VALUE_LIMIT); {
-		//has a value to change
-		If(TypeReg, EQUAL_I, SELECTION_LINE); {
-			//selection
-			LWZ(TempReg1, LineReg, Line::VALUE);
-			Decrement(TempReg1);
+	int LineReg = 3;
+	int TypeReg = 4;
+	int PageReg = 5;
+	// 0 = Incr, 1 = Decr
+	int DoDecrReg = 6;
 
-			If(TempReg1, LESS_I, 0); {
-				LWZ(TempReg1, LineReg, Line::MAX);
-			}EndIf();
-			STW(TempReg1, LineReg, Line::VALUE);
-		}Else(); If(TypeReg, EQUAL_I, INTEGER_LINE); {
-			//integer
-			LWZ(TempReg1, LineReg, Line::VALUE);
-			LWZ(TempReg3, LineReg, Integer::SPEED);
-			SUBF(TempReg1, TempReg1, TempReg3);
+	int TempReg1 = 12;
+	int TempReg2 = 11;
+	int TempReg3 = 10;
+	int TempReg4 = 9;
+	int TempReg5 = 8;
 
-			LWZ(TempReg3, LineReg, Integer::MIN);
-			If(TempReg1, LESS, TempReg3); {
-				STW(TempReg3, LineReg, Line::VALUE);
-			}Else(); {
-				STW(TempReg1, LineReg, Line::VALUE);
-			}EndIf();
-		}Else(); {
-			//floating
-			LFS(2, LineReg, Line::VALUE);
-			LFS(1, LineReg, Floating::SPEED);
-			FSUB(1, 2, 1);
+	int TempFReg1 = 1;
+	int TempFReg2 = 2;
+	int TempFReg3 = 3;
 
-			LFS(2, LineReg, Floating::MIN);
-			FCMPU(1, 2, 0);
-			BC(4, BRANCH_IF_FALSE, LT);
-			LFS(2, LineReg, Floating::MAX);
-			STFS(2, LineReg, Line::VALUE);
-			B(2);
-			STFS(1, LineReg, Line::VALUE);
-		}EndIf(); EndIf(); //done
+	int exitLabel = GetNextLabel();
 
-		//set changed flag
+	Label(ModifyLineValueSubroutineLabel);
+
+	// First, check that this line is a type which has an actual value to change.
+	CMPLI(TypeReg, HAS_VALUE_LIMIT, 0);
+	// If not, skip to the end of the subroutine.
+	JumpToLabel(exitLabel, bCACB_GREATER);
+
+	// Pre-compare the Change Direction into CR7, since we need it for every case.
+	CMPLI(DoDecrReg, 0, 7);
+
+	If(TypeReg, EQUAL_I, FLOATING_LINE);
+	{
+		// Load the Current Value and Speed as Floats...
+		LFS(TempFReg1, LineReg, Line::VALUE);
+		LFS(TempFReg2, LineReg, Floating::SPEED);
+		// ... and apply the requested operation.
+		// If we're subtracting instead of adding...
+		BC(2, bCACB_EQUAL.inConditionRegField(7));
+		// ... then negate the Speed value before we add, so we subtract instead!
+		FNEG(TempFReg2, TempFReg2);
+		// And actually do the addition.
+		FADDS(TempFReg3, TempFReg1, TempFReg2);
+
+		// Then clamp the value between the Min and Max!
+		// Load the relevant values...
+		LFS(TempFReg1, LineReg, Floating::MIN);
+		LFS(TempFReg2, LineReg, Floating::MAX);
+		// If we're below the Minimum...
+		FCMPU(TempFReg3, TempFReg1, 1);
+		BC(2, bCACB_GREATER_OR_EQ.inConditionRegField(1));
+		// ... then set Value to Maximum!
+		FMR(TempFReg3, TempFReg2);
+		// And if we're above the Maximum...
+		FCMPU(TempFReg3, TempFReg2, 1);
+		BC(2, bCACB_LESSER_OR_EQ.inConditionRegField(1));
+		// ... then set Value to Minimum!
+		FMR(TempFReg3, TempFReg1);
+
+		// And store the result to apply it!
+		STFS(TempFReg3, LineReg, Line::VALUE);
+	}
+	Else();
+	{
+		// Load the line's current value.
 		LWZ(TempReg1, LineReg, Line::VALUE);
-		LBZ(TempReg2, LineReg, Line::COLOR);
-		LWZ(TempReg3, LineReg, Line::DEFAULT);
-		LWZ(TempReg5, PageReg, Page::NUM_CHANGED_LINES);
-		RLWINM(TempReg4, TempReg2, 29, 31, 31);
-		ANDI(TempReg2, TempReg2, ~0x8);
-		If(TempReg1, NOT_EQUAL, TempReg3); {
-			//not default
-			Increment(TempReg5);
-			ORI(TempReg2, TempReg2, 0x8);
-		}EndIf();
-		SUBF(TempReg5, TempReg5, TempReg4);
-		STB(TempReg2, LineReg, Line::COLOR);
-		STW(TempReg5, PageReg, Page::NUM_CHANGED_LINES);
-	}EndIf();
-}
+		// Prepare our Speed and Min values (initializing to 1 and 0, respectively, to accommodate Selection lines).
+		ADDI(TempReg2, 0, 1);
+		ADDI(TempReg3, 0, 0);
 
-void IncreaseValue(int LineReg, int PageReg, int TypeReg, int TempReg1, int TempReg2, int TempReg3, int TempReg4, int TempReg5)
-{
-	If(TypeReg, LESS_OR_EQUAL_I, HAS_VALUE_LIMIT); {
-		//has a value to change
-		If(TypeReg, EQUAL_I, SELECTION_LINE); {
-			//selection
-			LWZ(TempReg1, LineReg, Line::VALUE);
-			Increment(TempReg1);
+		// If we *aren't* looking at a Selection line though...
+		CMPLI(TypeReg, SELECTION_LINE, 0);
+		BC(3, bCACB_EQUAL);
+		// ... we'll grab the actual Speed and Min values from the line itself!
+		LWZ(TempReg2, LineReg, Line::SPEED);
+		LWZ(TempReg3, LineReg, Line::MIN);
 
-			LWZ(TempReg2, LineReg, Line::MAX);
-			If(TempReg1, GREATER, TempReg2); {
-				SetRegister(TempReg1, 0);
-			}EndIf();
-			STW(TempReg1, LineReg, Line::VALUE);
-		}Else(); If(TypeReg, EQUAL_I, INTEGER_LINE); {
-			//integer
-			LWZ(TempReg1, LineReg, Line::VALUE);
-			LWZ(TempReg3, LineReg, Integer::SPEED);
-			ADD(TempReg1, TempReg1, TempReg3);
+		// Now apply the actual operation.
+		// If we're subtracting instead of adding...
+		BC(2, bCACB_EQUAL.inConditionRegField(7));
+		// ... then negate the Speed value before we add, so we subtract instead!
+		NEG(TempReg2, TempReg2);
+		// And actually do the addition.
+		ADD(TempReg1, TempReg1, TempReg2);
 
-			LWZ(TempReg3, LineReg, Integer::MAX);
-			If(TempReg1, GREATER, TempReg3); {
-				STW(TempReg3, LineReg, Line::VALUE);
-			}Else(); {
-				STW(TempReg1, LineReg, Line::VALUE);
-			}EndIf();
-		}Else(); {
-			//floating
-			LFS(2, LineReg, Line::VALUE);
-			LFS(1, LineReg, Floating::SPEED);
-			FADD(1, 2, 1);
+		// Then clamp the value between the Min and Max!
+		// We don't need the Speed value anymore, so we'll load the Max over it.
+		LWZ(TempReg2, LineReg, Line::MAX);
 
-			LFS(2, LineReg, Floating::MAX);
-			FCMPU(1, 2, 0);
-			BC(4, BRANCH_IF_FALSE, GT);
-			LFS(2, LineReg, Floating::MIN);
-			STFS(2, LineReg, Line::VALUE);
-			B(2);
-			STFS(1, LineReg, Line::VALUE);
-		}EndIf(); EndIf(); //done
+		// First, if we're below the Minimum...
+		CMP(TempReg1, TempReg3, 0);
+		BC(2, bCACB_GREATER_OR_EQ);
+		// ... then set Value to the Maximumum to wrap back around!
+		MR(TempReg1, TempReg2);
+		// And if we're above the Maximum...
+		CMP(TempReg1, TempReg2, 0);
+		BC(2, bCACB_LESSER_OR_EQ);
+		// ... then set Value to the Minimum to wrap back around!
+		MR(TempReg1, TempReg3);
 
-		//set changed flag
-		LWZ(TempReg1, LineReg, Line::VALUE);
-		LBZ(TempReg2, LineReg, Line::COLOR);
-		LWZ(TempReg3, LineReg, Line::DEFAULT);
-		LWZ(TempReg5, PageReg, Page::NUM_CHANGED_LINES);
-		RLWINM(TempReg4, TempReg2, 29, 31, 31);
-		ANDI(TempReg2, TempReg2, ~0x8);
-		If(TempReg1, NOT_EQUAL, TempReg3); {
-			//not default
-			Increment(TempReg5);
-			ORI(TempReg2, TempReg2, 0x8);
-		}EndIf();
-		SUBF(TempReg5, TempReg5, TempReg4);
-		STB(TempReg2, LineReg, Line::COLOR);
-		STW(TempReg5, PageReg, Page::NUM_CHANGED_LINES);
-	}EndIf();
+		// And store the result to apply it!
+		STW(TempReg1, LineReg, Line::VALUE);
+	}
+	EndIf();
+
+	//set changed flag
+	LWZ(TempReg1, LineReg, Line::VALUE);
+	LBZ(TempReg2, LineReg, Line::COLOR);
+	LWZ(TempReg3, LineReg, Line::DEFAULT);
+	LWZ(TempReg5, PageReg, Page::NUM_CHANGED_LINES);
+	RLWINM(TempReg4, TempReg2, 29, 31, 31);
+	ANDI(TempReg2, TempReg2, ~0x8);
+	If(TempReg1, NOT_EQUAL, TempReg3);
+	{
+		//not default
+		Increment(TempReg5);
+		ORI(TempReg2, TempReg2, 0x8);
+	}
+	EndIf();
+	SUBF(TempReg5, TempReg5, TempReg4);
+	STB(TempReg2, LineReg, Line::COLOR);
+	STW(TempReg5, PageReg, Page::NUM_CHANGED_LINES);
+
+	ADDI(4, 0, sii_SND_SE_SYSTEM_COUNTER);
+	JumpToLabel(getPlaySELabel(), bCACB_UNSPECIFIED, 0);
+
+	Label(exitLabel);
+	BLR();
 }
 
 void Move(int LineReg, int PageReg, int NextLineOffset, int TempReg1, int TempReg2) {
@@ -1944,71 +3101,84 @@ void GetActionFromInputs(int ButtonReg, int ControlStickXReg, int ControlStickYR
 	SetRegister(ResultReg, NO_ACTION); //default
 
 	//set Z for fast
+	int notZPressLabel = GetNextLabel();
 	ANDI(4, ButtonReg, BUTTON_Z);
-	If(4, NOT_EQUAL_I, 0); {
-		//set frame timers to 3
-		LoadWordToReg(4, 7, MOVE_FRAME_TIMER_LOC);
-		LoadWordToReg(6, 8, INCREMENT_FRAME_TIMER_LOC);
-		SetRegister(5, 3);
-		If(4, GREATER, 5); {
-			STW(5, 7, 0);
-		}EndIf();
-		If(6, GREATER, 5); {
-			STW(5, 8, 0);
-		}EndIf();
+	JumpToLabel(notZPressLabel, bCACB_EQUAL);
+	//set frame timers to 3
+	LoadWordToReg(4, 7, MOVE_FRAME_TIMER_LOC);
+	LoadWordToReg(6, 8, INCREMENT_FRAME_TIMER_LOC);
+	SetRegister(5, 3);
+	If(4, GREATER, 5); {
+		STW(5, 7, 0);
 	}EndIf();
+	If(6, GREATER, 5); {
+		STW(5, 8, 0);
+	}EndIf();
+	Label(notZPressLabel);
 
-	//move
+	// D-Pad Move Up
 	ANDI(4, ButtonReg, BUTTON_DU);
-	If(4, NOT_EQUAL_I, 0);
-	SetRegister(ControlStickYReg, MOVE_THRESHHOLD);
-	EndIf();
+	BC(2, bCACB_EQUAL);
+	ADDI(ControlStickYReg, 0, MOVE_THRESHHOLD);
 
+	// D-Pad Move Down
 	ANDI(4, ButtonReg, BUTTON_DD);
-	If(4, NOT_EQUAL_I, 0);
-	SetRegister(ControlStickYReg, -MOVE_THRESHHOLD);
-	EndIf();
+	BC(2, bCACB_EQUAL);
+	ADDI(ControlStickYReg, 0, -MOVE_THRESHHOLD);
 
 	SetControlStickAction(ControlStickYReg, MOVE_FRAME_TIMER_LOC, MOVE_NUM_WAIT_FRAMES, FIRST_MOVE_NUM_WAIT_FRAMES, MOVE_THRESHHOLD, MOVE_UP, MOVE_DOWN, ResultReg);
 
-	//increment
+	// D-Pad Increment
 	ANDI(4, ButtonReg, BUTTON_DR);
-	If(4, NOT_EQUAL_I, 0);
-	SetRegister(ControlStickXReg, INCREMENT_THRESHHOLD);
-	EndIf();
+	BC(2, bCACB_EQUAL);
+	ADDI(ControlStickXReg, 0, INCREMENT_THRESHHOLD);
 
+	// D-Pad Decrement
 	ANDI(4, ButtonReg, BUTTON_DL);
-	If(4, NOT_EQUAL_I, 0);
-	SetRegister(ControlStickXReg, -INCREMENT_THRESHHOLD);
-	EndIf();
+	BC(2, bCACB_EQUAL);
+	ADDI(ControlStickXReg, 0, -INCREMENT_THRESHHOLD);
 
 	SetControlStickAction(ControlStickXReg, INCREMENT_FRAME_TIMER_LOC, INCREMENT_NUM_WAIT_FRAMES, FIRST_INCREMENT_NUM_WAIT_FRAMES, INCREMENT_THRESHHOLD, INCREMENT, DECREMENT, ResultReg);
 
 
+	// Reset Line
 	ANDI(4, ButtonReg, TRIGGER_RESET_LINE_BUTTON);
-	If(4, NOT_EQUAL_I, 0); //enter sub menu
-	SetRegister(ResultReg, RESET_LINE);
-	EndIf(); //enter sub menu
+	BC(2, bCACB_EQUAL);
+	ADDI(ResultReg, 0, RESET_LINE);
 
+	// Leave Sub Menu
 	ANDI(4, ButtonReg, TRIGGER_RESET_PAGE_BUTTON);
-	If(4, NOT_EQUAL_I, 0); //leave sub menu
-	SetRegister(ResultReg, RESET_PAGE);
-	EndIf(); //leave sub menu
+	BC(2, bCACB_EQUAL);
+	ADDI(ResultReg, 0, RESET_PAGE);
 
+	// Enter Sub Menu
 	ANDI(4, ButtonReg, TRIGGER_ENTER_SUB_MENU_BUTTON);
-	If(4, NOT_EQUAL_I, 0); //enter sub menu
-	SetRegister(ResultReg, ENTER_SUB_MENU);
-	EndIf(); //enter sub menu
+	BC(2, bCACB_EQUAL);
+	ADDI(ResultReg, 0, ENTER_SUB_MENU);
 
+	// Leave Sub Menu
+	int exitMenuInstrLabel = GetNextLabel();
+	int notLeaveSubMenuLabel = GetNextLabel();
 	ANDI(4, ButtonReg, TRIGGER_LEAVE_SUB_MENU_BUTTON);
-	If(4, NOT_EQUAL_I, 0); //leave sub menu
-	SetRegister(ResultReg, LEAVE_SUB_MENU);
-	EndIf(); //leave sub menu
+	JumpToLabel(notLeaveSubMenuLabel, bCACB_EQUAL);
+	// Assume by default we're just leaving a sub menu.
+	ADDI(ResultReg, 0, LEAVE_SUB_MENU);
+	// But we also need to support closing the menu if we're on the main page!
+	// Grab pointers to the currnet page and main page...
+	ADDIS(4, 0, MAIN_PAGE_PTR_LOC >> 0x10);
+	LWZ(5, 4, CURRENT_PAGE_PTR_LOC & 0xFFFF);
+	LWZ(4, 4, MAIN_PAGE_PTR_LOC & 0xFFFF);
+	// ... compare them...
+	CMPL(4, 5, 0);
+	// ... and if they're the same, overriding the action!
+	JumpToLabel(exitMenuInstrLabel, bCACB_EQUAL);
+	Label(notLeaveSubMenuLabel);
 
+	// Leave Menu
 	ANDI(4, ButtonReg, BUTTON_START);
-	If(4, NOT_EQUAL_I, 0); //leave menu
-	SetRegister(ResultReg, EXIT_MENU);
-	EndIf(); //leave menu
+	BC(2, bCACB_EQUAL);
+	Label(exitMenuInstrLabel);
+	ADDI(ResultReg, 0, EXIT_MENU);
 }
 
 void SetControlStickAction(int StickValReg, int TimerLoc, int NumWaitFrames, int FirstTimeNumWaitFrames, int Threshhold, int PositiveAction, int NegativeAction, int ResultReg)
@@ -2116,10 +3286,8 @@ void printFPS() {
 
 void PrintCodeMenu()
 {
-	ASMStart(0x80017928);
-	vector<int> FPRegs(14);
-	iota(FPRegs.begin(), FPRegs.end(), 0);
-	SaveRegisters(FPRegs);
+	ASMStart(0x80017928, "[CM: Code Menu] Print Code Menu");
+	SaveRegisters(14);
 
 	int Reg1 = 31;
 	int Reg2 = 30;
@@ -2189,7 +3357,7 @@ void PrimeCodeMenu()
 {
 	GeckoIf(0x8119969c, EQUAL, 0x9421fff0);
 	//r3 + 0x40 has location
-	ASMStart(0x8119969c);
+	ASMStart(0x8119969c, "[CM: Code Menu] Prime Code Menu");
 	SaveRegisters();
 
 	int Reg1 = 31;
@@ -2349,7 +3517,7 @@ void PrintPage(int PageReg, int SettingsPtrReg, int Reg1, int Reg2, int Reg3, in
 {
 	SetupPrintText(SettingsPtrReg);
 
-	SetRegister(Reg5, COLOR_ARRAY_START);
+	SetRegister(Reg5, LINE_COLOR_TABLE.table_start());
 
 	//set initial text pos
 	SetRegister(Reg1, GetHexFromFloat(INITIAL_XPOS));
@@ -2383,12 +3551,17 @@ void PrintPage(int PageReg, int SettingsPtrReg, int Reg1, int Reg2, int Reg3, in
 		PrintCodeMenuLine(Reg2, SettingsPtrReg, Reg5, Reg3, Reg4);
 
 		LHZ(3, Reg2, Line::SIZE);
-		ADD(Reg2, Reg2, 3); //next line
+		LHZUX(3, Reg2, 3);
 	}EndWhile();
 }
 
 void PrintCodeMenuLine(int LinePtrReg, int SettingsPtrReg, int ColorArrayPtrReg, int TempReg1, int TempReg2)
 {
+	int skipPrintingLabel = GetNextLabel();
+	LBZ(TempReg2, LinePtrReg, Line::FLAGS);
+	ANDI(TempReg2, TempReg2, Line::LINE_FLAGS_FIELDS::LINE_FLAG_SKIP_PRINTING);
+	JumpToLabel(skipPrintingLabel, bCACB_NOT_EQUAL);
+
 	LBZ(TempReg2, LinePtrReg, Line::TYPE);
 
 	LBZ(TempReg1, LinePtrReg, Line::COLOR);
@@ -2415,10 +3588,11 @@ void PrintCodeMenuLine(int LinePtrReg, int SettingsPtrReg, int ColorArrayPtrReg,
 		LWZ(5, LinePtrReg, Line::VALUE); //get setting
 
 		If(TempReg2, EQUAL_I, SELECTION_LINE); {
-			ADDI(TempReg1, LinePtrReg, Selection::SELECTION_LINE_OFFSETS_START);
+			LWZ(TempReg2, LinePtrReg, Selection::SELECTION_LINE_SOURCE_SELECTION_INDEX);
+			ADDI(TempReg1, TempReg2, Selection::SELECTION_LINE_OFFSETS_START);
 			RLWINM(5, 5, 2, 0, 31); //<< 2
 			LHZX(5, TempReg1, 5); //get string offset
-			ADD(5, 5, LinePtrReg); //get string offset
+			ADD(5, 5, TempReg2); //get string offset
 		}EndIf();
 
 		SprintF(4, { 5 });
@@ -2429,6 +3603,8 @@ void PrintCodeMenuLine(int LinePtrReg, int SettingsPtrReg, int ColorArrayPtrReg,
 	PrintString(TempReg1, TempReg2, SettingsPtrReg);
 
 	NewLine(SettingsPtrReg);
+
+	Label(skipPrintingLabel);
 }
 
 //requires 2 endifs
@@ -2494,7 +3670,8 @@ void SaveReplay()
 	SetRegs(3, { REPLAY_NTE_DATA_BUFFER_LOC, 42 });
 	CallBrawlFunc(0x80152b5c); //ctnteFileReplay
 
-	SetRegister(4, REPLAY_BUFFER_BEGIN);
+	GetHeapAddress(HEAP_ADDRESS_TABLE.CACHED_REPLAY_HEAP, 4);
+	ADDI(4, 4, REPLAY_HEAP_REPLAY_BUFFER_BEGIN_OFF);
 	CallBrawlFunc(0x80152c4c); //setData
 
 	SetArgumentsFromRegs(3, { SectionBufferReg, NTEBufferReg, HighTimeReg, LowTimeReg });
@@ -2549,8 +3726,29 @@ void SaveReplay()
 	MR(reg4, 3);
 
 #if DOLPHIN_BUILD
-	WriteFileToVF(PathPtrReg, reg1, reg2);
+	int tryWriteLabel = GetNextLabel();
+	int writeFinishedLabel = GetNextLabel();
 
+	// Initialize a counter for how many times we're allowed to try loading.
+	ADDI(reg7, 0, 0x8);
+
+	Label(tryWriteLabel);
+	WriteFileToVF(PathPtrReg, reg1, reg2);
+	// If writing the replay succeeded, we can continue.
+	CMPLI(3, 0x00, 0);
+	JumpToLabel(writeFinishedLabel, bCACB_EQUAL);
+	// If not, decrement our retry counter...
+	ADDIC(reg7, reg7, -1, 1);
+	// ... and if the counter winds up below 0, we're out of tries, give up.
+	JumpToLabel(writeFinishedLabel, bCACB_LESSER);
+	// Otherwise though, we need to retry. Wait for a while...
+	SetRegs(3, { 0, 607500 * 3 });
+	CallBrawlFunc(0x801e1a80); //OSSleepTicks
+	// ... then try the write again.
+	JumpToLabel(tryWriteLabel);
+
+	// Once we're done though, unmount and prepare to exit.
+	Label(writeFinishedLabel);
 	SetRegs(3, { DOLPHIN_MOUNT_VF_LOC, 0 });
 	CallBrawlFunc(0x80021038); //unmountVF
 	SetRegister(reg1, 0);
@@ -2581,3 +3779,4 @@ void RunIfPortToggle(int ARRAY_LOC, int PortReg) {
 		}
 	}
 }
+

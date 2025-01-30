@@ -1,10 +1,9 @@
-#ifndef DASH_ATTACK_ITEM_GRAB_V1_H
-#define DASH_ATTACK_ITEM_GRAB_V1_H
+#ifndef DASH_ATTACK_ITEM_GRAB_H
+#define DASH_ATTACK_ITEM_GRAB_H
 
-#include "PowerPC Assembly Functions.h"
-#include "Code Menu.h"
-#include "_lavaBytes.h"
+#include "stdafx.h"
+#include "_AdditionalCode.h"
 
-void dashAttackItemGrab();
+void dashAttackItemGrab(bool codeEnabled = 1);
 
 #endif

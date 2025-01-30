@@ -1,3 +1,5 @@
+
+
 L-Cancelling Rework [Eon]
 .macro getInt(<id>)
 {
@@ -158,7 +160,8 @@ L-Cancel Landing Lag and Success Rate and Score Display is Auto L-Cancel Option 
 # Code Menu mod made by Desi, based on Per Player versions by Wiiztech
 
 .alias CodeMenuStart = 0x804E
-.alias CodeMenuHeader = 0x02B0       #Offset of word containing location of the player 1 toggle. Source is compiled with headers for this.
+.alias CodeMenuHeader = 0x02A8       #Offset of word containing location of the player 1 toggle. Source is compiled with headers for this.
+.alias CodeMenuHeaderInputBuffer = 0x2C4
 
 HOOK @ $80874850 
 {
@@ -202,7 +205,9 @@ trueLcancel:
   addi r11, r11, 0xC
   bl applyFlash
   li r6, 1
-  b applyLcancel
+  lfs f0, -23448(r2)
+  fmuls f30, f30, f0
+  b calcStat
 
 checkForAutoLcancel: 
   lwz r11, 28(r31)          #\Obtain Player ID 
@@ -214,19 +219,23 @@ checkForAutoLcancel:
   ori r6, r6, CodeMenuHeader    #Load Code Menu Header
   lwzx r6, r6, r11
   lbz r11, 0xB(r6)     #Load Option Selection
-  cmpwi r11, 0x1       #If (CodeMenuVar == 1), apply red flash on miss
+  cmpwi r11, 0x1
   beq applyLCancelRedFlash
-  lis r11, 0x9017           #\ Check if universal ALC toggle is on,
-  ori r11, r11, 0xF36B      #/ and skip red flash check if so
+  cmpwi r11, 0x2
+  beq applyModifiedLCancelFlash
+  lis r11, 0x9017
+  ori r11, r11, 0xF36B
   lbz r11, 0(r11)
-  cmpwi r11, 0x1       #If (CodeMenuVar == 1), apply ALC
+  cmpwi r11, 0x1
   beq applyLcancel  #Skip applying fail flash if universal option is on
+  lhz r11, 0 (r6)
+  add r6, r11, r6   #Load up next toggle (Modifier)
   lhz r11, 0 (r6)
   add r6, r11, r6   #Load up next toggle (Red Flash on L Cancel)
   lbz r11, 0xB(r6)     #Load Option Selection
-  cmpwi r11, 0x1       #If (CodeMenuVar == 1), apply red flash on miss
+  cmpwi r11, 0x1
   beq applyRedFlashNoCancel
-  b calcStat
+  b checkForInputBuffer
 
 applyRedFlashNoCancel:
   lis r0, 0xFF00      #Red Flash
@@ -236,22 +245,53 @@ applyRedFlashNoCancel:
   addi r11, r11, 0xC
   bl applyFlash
   li r6, 0
+  b checkForInputBuffer
+
+applyModifiedLCancelFlash:
+  lhz r11, 0 (r6)
+  add r6, r11, r6
+  lfs f0, 0x8 (r6)
+  fmuls f30, f30, f0
+  lis r0, 0x8000      #Purple Flash for Modified Values
+  ori r0, r0, 0x8080
+  bl 0x4  #set LR
+  mflr r11 #Store Link Register in R11
+  addi r11, r11, 0xC
+  bl applyFlash
+  li r6, 0
   b calcStat
 
 applyLCancelRedFlash:
-  lis r0, 0xFF00    RedFlash
+  lis r0, 0xFF00    #RedFlash
   ori r0, r0, 0x0080
   bl 0x4  #set LR
   mflr r11 #Store Link Register in R11
   addi r11, r11, 0x0C
   bl applyFlash
-  li r6, 0
-
-applyLcancel:  
-#load 0.5
+applyLcancel:
   lfs f0, -23448(r2)
   fmuls f30, f30, f0
-  b calcStat
+  li r6, 0
+
+checkForInputBuffer:
+  lwz r11, 28(r31)          #\Obtain Player ID 
+  lwz r11, 40(r11)          #|
+  lwz r11, 16(r11)          #|
+  lbz r11, 85(r11)          #/
+  mulli r11, r11, 0x4       #Determine which player offset to load
+  lis r4, CodeMenuStart
+  ori r4, r4, CodeMenuHeaderInputBuffer    #Load Code Menu Header
+  lwzx r4, r4, r11
+  lbz r4, 0xB(r4)     #Load Option Selection
+  cmpwi r4, 0
+  beq calcStat
+  lis r0, 0xB000    #Apply Purple Flash indicating Input Buffer
+  ori r0, r0, 0xFF80
+  bl 0x4  #set LR
+  mflr r11 #Store Link Register in R11
+  addi r11, r11, 0xC
+  bl applyFlash
+  li r6, 0
 
 #everything past this point is for the stat
 calcStat:

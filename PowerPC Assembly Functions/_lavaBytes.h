@@ -1,6 +1,7 @@
 #ifndef LAVA_BYTES_V1_H
 #define LAVA_BYTES_V1_H
 
+#include "stdafx.h"
 #include <sstream>
 #include <vector>
 
@@ -103,6 +104,7 @@ namespace lava
 		out.put(objectIn);
 		return out.good();
 	}
+
 }
 
 #endif

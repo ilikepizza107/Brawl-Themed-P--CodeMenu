@@ -1191,10 +1191,8 @@ void CodeMenu()
 #endif
 
 	MainLines.push_back(new Selection("Code Menu Activation", { "Default", "PM 3.6", "OFF" }, 0, CODE_MENU_ACTIVATION_SETTING_INDEX));
-	if (ROSTER_LIST.size() > 1)
-	{
-		MainLines.push_back(new Selection("CSS Roster Version", ROSTER_LIST, 0, CSS_VERSION_SETTING_INDEX));
-	}
+	
+	MainLines.push_back(new Selection("CSS Roster Version", { "vBrawl", "Project+" }, 0, CSS_VERSION_SETTING_INDEX));
 
 	if (THEME_LIST.size() > 1)
 	{

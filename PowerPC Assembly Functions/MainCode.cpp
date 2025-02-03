@@ -239,7 +239,9 @@ int main(int argc, char** argv)
 
 		CodeMenu(); tagBasedCostumes(); 
 		
-		cssRosterChange(); themeChange(); 
+		//cssRosterChange(); 
+		
+		themeChange(); 
 
 		//playerSlotColorChangers(CONFIG_BACKPLATE_COLOR_MODE);
 

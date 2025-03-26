@@ -6,7 +6,7 @@
     <menuProperties>
         <!--Specifies what folder on the SD Card the menu will expect to be in. Must be 8 characters long!-->
         <!--Leave this blank to use the default folder.-->
-        <buildBaseFolder name="Project+" />
+        <buildBaseFolder name="BrawlTP+" />
         <!--Specify a replacement for the text that usually sits at the top of the menu.-->
         <!--Leave this blank to leave the original title text in place.-->
         <menuTitle text="Brawl P+ Code Menu" />

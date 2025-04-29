@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <map>
 #include <array>
+#include "ConstantOverrides.h"
 #include "_XMLProcessing.h"
 
 //active codes
@@ -93,13 +94,6 @@ extern int JUMPSQUAT_OVERRIDE_TOGGLE_INDEX;
 extern int JUMPSQUAT_OVERRIDE_FRAMES_INDEX;
 extern int JUMPSQUAT_OVERRIDE_MIN_INDEX;
 extern int JUMPSQUAT_OVERRIDE_MAX_INDEX;
-
-struct ConstantPair {
-	int address;
-	int* index;
-
-	ConstantPair(int address, int &index) : address(address), index(&index) {}
-};
 
 //constant overrides
 extern vector<ConstantPair> constantOverrides;
@@ -350,6 +344,7 @@ extern const std::string netMenuConfigXMLFileName;
 extern const std::string addonInputFolderPath;
 extern const std::string addonInputSourceFilename;
 extern const std::string addonInputConfigFilename;
+extern const std::string addonINDEXFileFilename;
 extern const std::string addonAliasBankFilename;
 extern const std::string addonOutputFolderName;
 extern const std::string symbolMapInputFileName;
@@ -463,7 +458,7 @@ class Line
 public:
 	enum LineBehaviorFlags
 	{
-		lbf_UNSELECTABLE = 0,
+		lbf_LOCKED = 0,
 		lbf_HIDDEN,
 		lbf_STICKY,
 		lbf_REMOVED,
@@ -485,7 +480,10 @@ public:
 	{
 		// Makes line immune to being reset to its default value!
 		LINE_FLAG_IGNORE_INDIRECT_RESET = 0b00000001,
-		LINE_FLAG_SKIP_PRINTING         = 0b00000010
+		// Makes line unselectable and invisible!
+		LINE_FLAG_HIDE_FROM_USER        = 0b00000010,
+		// Disables changing the line's value manually!
+		LINE_FLAG_VALUE_LOCKED          = 0b00000100,
 	};
 
 	Line();

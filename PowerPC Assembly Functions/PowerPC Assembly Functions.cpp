@@ -5,7 +5,7 @@
 
 #if BUILD_TYPE == PROJECT_PLUS // If the program is configured by default for P+ builds...
 	#if PROJECT_PLUS_EX_BUILD // ... and this is a P+EX build... 
-		unsigned long characterListVersion = characterListVersions::clv_PPEX_WALUIGI; // ... we'll default to the current version's character list,
+		unsigned long characterListVersion = characterListVersions::clv_PPEX_SCEPTILE; // ... we'll default to the current version's character list,
 		string MAIN_FOLDER = "P+EX/./."; // use the "P+EX" base directory,
 		std::string MENU_NAME = "Project+Ex Code Menu"; // and use the P+EX menu name.
 
@@ -30,8 +30,8 @@ const std::array<std::string, characterListVersions::__clv_Count> characterListV
 	"P+EX (Ridley)",
 	"P+EX (Waluigi)",
 	"P+EX (Alloys)",
-	"P+EX (Dark Samus)",
 	"P+EX (Sceptile)",
+	"P+EX (Dark Samus)",
 };
 std::string getCharacterListVersionName(unsigned long versionID)
 {
@@ -1308,21 +1308,29 @@ void SaveRegisters()
 void SaveRegisters(vector<int> FPRegs)
 {
 	FPPushRecords = FPRegs;
-	int stackSize = 29 * 4 + FPRegs.size() * 8 + 8 + 8;
-	STW(0, 1, -4);
-	MFLR(0);
-	STW(0, 1, 4);
-	MFCTR(0);
-	STW(0, 1, -8);
 
-	int offset = -8;
-	for (int x : FPRegs) {
-		offset -= 8;
-		STFD(x, 1, offset);
-	}
+	// Determine length of FPR backup
+	std::size_t FPRStackBakLength = FPRegs.size() * 0x8;
+	std::size_t stackSize = 0x8 + GPRStackBakLength + Reg0CTRStackBakLength + FPRStackBakLength;
+	stackSize += 0x10 - (stackSize & 0xF);
 
+	// Allocate Stack Frame
 	STWU(1, 1, -stackSize);
-	STMW(3, 1, 8);
+	// Store r0 and CTR at designated Stack Region
+	STW(0, 1, Reg0CTRStackBakOffset);
+	MFCTR(0);
+	STW(0, 1, Reg0CTRStackBakOffset + 0x4);
+	// Get LR and store it at its designated Stack Region
+	MFLR(0);
+	STW(0, 1, stackSize + 0x4);
+	// Backup GPRs to designated Stack Region
+	STMW(3, 1, GPRStackBakOffset);
+	// Backup FPRs to designated Stack Region
+	int offset = FPRStackBakOffset;
+	for (int x : FPRegs) {
+		STFD(x, 1, offset);
+		offset += 0x8;
+	}
 }
 
 void SaveRegisters(int NumFPRegs)
@@ -1330,34 +1338,34 @@ void SaveRegisters(int NumFPRegs)
 	vector<int> FPRegs(NumFPRegs);
 	iota(FPRegs.begin(), FPRegs.end(), 0);
 	FPPushRecords = FPRegs;
+	
+	// Determine length of FPR backup
+	std::size_t FPRStackBakLength = NumFPRegs * 0x8;
+	std::size_t stackSize = 0x8 + GPRStackBakLength + Reg0CTRStackBakLength + FPRStackBakLength;
+	stackSize += 0x10 - (stackSize & 0xF);
 
-	std::size_t GPRStackSpaceLength = 29 * 0x4;
-	std::size_t FPRStackSpaceLength = NumFPRegs * 0x8;
-	std::size_t Reg0CTRStackSpaceLength = 0x4 + 0x4;
-	std::size_t stackSize = 0x8 + GPRStackSpaceLength + FPRStackSpaceLength + Reg0CTRStackSpaceLength;
-	STW(0, 1, -4);
-	MFLR(0);
-	STW(0, 1, 4);
-	MFCTR(0);
-	STW(0, 1, -8);
-
-	JumpToLabel(getSaveFPRsDownLabel(NumFPRegs - 1), bCACB_UNSPECIFIED, 1);
-
+	// Allocate Stack Frame
 	STWU(1, 1, -stackSize);
-	STMW(3, 1, 8);
+	// Store r0 and CTR at designated Stack Region
+	STW(0, 1, Reg0CTRStackBakOffset);
+	MFCTR(0);
+	STW(0, 1, Reg0CTRStackBakOffset + 0x4);
+	// Get LR and store it at its designated Stack Region
+	MFLR(0);
+	STW(0, 1, stackSize + 0x4);
+	// Backup GPRs to designated Stack Region
+	STMW(3, 1, GPRStackBakOffset);
+	// Backup FPRs to designated Stack Region
+	JumpToLabel(getSaveFPRsDownLabel(NumFPRegs - 1), bCACB_UNSPECIFIED, 1);
 }
 
 void RestoreRegisters()
 {
-	std::size_t GPRStackSpaceLength = 29 * 0x4;
-	std::size_t FPRStackSpaceLength = FPPushRecords.size() * 0x8;
-	std::size_t Reg0CTRStackSpaceLength = 0x4 + 0x4;
-	std::size_t stackSize = 0x8 + GPRStackSpaceLength + FPRStackSpaceLength + Reg0CTRStackSpaceLength;
+	std::size_t FPRStackBakLength = FPPushRecords.size() * 0x8;
+	std::size_t stackSize = 0x8 + GPRStackBakLength + Reg0CTRStackBakLength + FPRStackBakLength;
+	stackSize += 0x10 - (stackSize & 0xF);
 
-	LMW(3, 1, 8);
-	ADDI(1, 1, stackSize);
-
-	if (FPPushRecords.size() > 1)
+	if (FPPushRecords.size() > 0)
 	{
 		std::set<int> FPRegsSorted(FPPushRecords.begin(), FPPushRecords.end());
 		bool regsConsecutiveFromZero = *FPRegsSorted.begin() == 0x00;
@@ -1376,19 +1384,25 @@ void RestoreRegisters()
 		}
 		else
 		{
-			int offset = -8;
+			int offset = FPRStackBakOffset;
 			for (int x : FPPushRecords) {
-				offset -= 8;
 				LFD(x, 1, offset);
+				offset += 0x8;
 			}
 		}
 	}
 	
-	LWZ(0, 1, -8);
-	MTCTR(0);
-	LWZ(0, 1, 4);
+	// Restore GPRs!
+	LMW(3, 1, GPRStackBakOffset);
+	// Restore LR!
+	LWZ(0, 1, stackSize + 0x4);
 	MTLR(0);
-	LWZ(0, 1, -4);
+	// Restore r0 and CTR!
+	LWZ(0, 1, Reg0CTRStackBakOffset + 0x4);
+	MTCTR(0);
+	LWZ(0, 1, Reg0CTRStackBakOffset);
+	// De-allocate Stack Frame!
+	ADDI(1, 1, stackSize);
 }
 
 void SetRegs(int StartReg, vector<int> values)
@@ -1583,9 +1597,14 @@ void WriteStringToMem(string Text, int AddressReg)
 void WriteVectorToMem(vector<int> Values, int AddressReg)
 {
 	int offset = 0;
+	int prevX = Values.front() -1;
 	for (int x : Values) {
-		SetRegister(4, x);
+		if (prevX != x)
+		{
+			SetRegister(4, x);
+		}
 		STW(4, AddressReg, offset);
+		prevX = x;
 		offset += 4;
 	}
 }
@@ -2032,32 +2051,38 @@ void IfInVersus(int reg) {
 
 void LoadFile(string filePath, int destination, int reg1, int reg2, bool loadFromSD)
 {
-	SetRegister(reg1, STRING_BUFFER);
+	const int stackSize = 0x50;
+	STWU(1, 1, -stackSize);
+	MFLR(0);
+	STW(0, 1, stackSize + 0x4);
 
-	SetRegister(reg2, STRING_BUFFER + 0x18);
-	STW(reg2, reg1, 0); //file path ptr
-
-	SetRegister(reg2, 0);
-	STW(reg2, reg1, 4);
-	STW(reg2, reg1, 8);
-	STW(reg2, reg1, 0x10);
-
-	SetRegister(reg2, destination);
-	STW(reg2, reg1, 0xC); //storage loc
-
-	SetRegister(reg2, -1);
-	STW(reg2, reg1, 0x14);
-
-	ADDI(reg2, reg1, 0x18);
+	ADDI(3, 1, 0x08);
+	ADDI(reg2, 3, 0x18);
 	WriteStringToMem(filePath, reg2);
 
-	MR(3, reg1);
+	STW(reg2, 3, 0); //file path ptr
+
+	SetRegister(reg2, 0);
+	STW(reg2, 3, 4);
+	STW(reg2, 3, 8);
+	STW(reg2, 3, 0x10);
+
+	SetRegister(reg2, destination);
+	STW(reg2, 3, 0xC); //storage loc
+
+	SetRegister(reg2, -1);
+	STW(reg2, 3, 0x14);
+
 	if (loadFromSD) {
-		CallBrawlFunc(0x8001cbf4); //readSDFile
+		CallBrawlFunc(0x8001CBF4); //readSDFile
 	}
 	else {
 		CallBrawlFunc(0x8001BF0C); //readFile
 	}
+
+	LWZ(0, 1, stackSize + 0x4);
+	MTLR(0);
+	ADDI(1, 1, stackSize);
 }
 
 void constrainFloat(int floatReg, int tempFReg, int tempReg, float min, float max) {

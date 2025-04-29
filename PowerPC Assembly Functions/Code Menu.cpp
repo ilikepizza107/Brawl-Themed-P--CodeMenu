@@ -184,13 +184,13 @@ void buildCharacterIDLists()
 		characterNameToIDMap.emplace("Yellow Alloy", LCSI_ALLOY_YELLOW);
 		characterNameToIDMap.emplace("Green Alloy", LCSI_ALLOY_GREEN);
 	}
-	if (characterListVersion >= characterListVersions::clv_PPEX_DARK_SAMUS)
-	{
-		characterNameToIDMap.emplace("Dark Samus", LCSI_DARK_SAMUS);
-	}
 	if (characterListVersion >= characterListVersions::clv_PPEX_SCEPTILE)
 	{
 		characterNameToIDMap.emplace("Sceptile", LCSI_SCEPTILE);
+	}
+	if (characterListVersion >= characterListVersions::clv_PPEX_DARK_SAMUS)
+	{
+		characterNameToIDMap.emplace("Dark Samus", LCSI_DARK_SAMUS);
 	}
 
 	unzipMapToVectors(characterNameToIDMap, CHARACTER_LIST, CHARACTER_ID_LIST);
@@ -432,6 +432,7 @@ const std::string netMenuConfigXMLFileName = "Net-" + menuConfigXMLFileName;
 const std::string addonInputFolderPath = "./Addons/";
 const std::string addonInputSourceFilename = "Source.asm";
 const std::string addonInputConfigFilename = "Definition.xml";
+const std::string addonINDEXFileFilename = "idx.dat";
 const std::string addonAliasBankFilename = "AddonAliases.asm";
 const std::string addonOutputFolderName = "CM_Addons/";
 const std::string outputFolder = "./Code_Menu_Output/";
@@ -575,14 +576,15 @@ void Line::WriteLineData(vector<u8> SelectionOffsets)
 {
 	if (behaviorFlags[Line::lbf_REMOVED]) return; // If the line is explicitly marked as removed, skip it!
 
-	if (behaviorFlags[Line::lbf_UNSELECTABLE])
+	Flags &= ~Line::LINE_FLAG_VALUE_LOCKED;
+	if (behaviorFlags[Line::lbf_LOCKED])
 	{
-		Color = UNSELECTABLE_LINE_COLOR_OFFSET;
+		Flags |= Line::LINE_FLAG_VALUE_LOCKED;
 	}
-	Flags &= ~Line::LINE_FLAG_SKIP_PRINTING;
+	Flags &= ~Line::LINE_FLAG_HIDE_FROM_USER;
 	if (behaviorFlags[Line::lbf_HIDDEN])
 	{
-		Flags |= Line::LINE_FLAG_SKIP_PRINTING;
+		Flags |= Line::LINE_FLAG_HIDE_FROM_USER;
 	}
 	Flags &= ~Line::LINE_FLAG_IGNORE_INDIRECT_RESET;
 	if (behaviorFlags[Line::lbf_STICKY])
@@ -907,9 +909,7 @@ void Page::GetSelectableLines(vector<int>& SelectableLines)
 		Line* currLine = Lines[i];
 		if (currLine->type != COMMENT_LINE && currLine->type != PRINT_LINE)
 		{
-			if (!currLine->behaviorFlags[Line::lbf_UNSELECTABLE] &&
-				!currLine->behaviorFlags[Line::lbf_HIDDEN] &&
-				!currLine->behaviorFlags[Line::lbf_REMOVED])
+			if (!currLine->behaviorFlags[Line::lbf_REMOVED])
 			{
 				SelectableLines.push_back(i);
 			}
@@ -1104,7 +1104,7 @@ void CodeMenu()
 	SpecialModeLines.push_back(new Comment("Special Modes"));
 	SpecialModeLines.push_back(ConstantsPage.CalledFromLine.get());
 	SpecialModeLines.push_back(DBZModePage.CalledFromLine.get());
-	SpecialModeLines.push_back(new Toggle("Random Angle Mode", false, RANDOM_ANGLE_INDEX));
+	SpecialModeLines.push_back(new Selection("Random Angle Mode", {"Off", "True Random", "Static Random"}, 0, RANDOM_ANGLE_INDEX));
 	SpecialModeLines.push_back(new Toggle("War Mode", false, WAR_MODE_INDEX));
 	// War Mode is only visible by default on P+Ex builds based on pre v3.0 P+.
 	SpecialModeLines.back()->behaviorFlags[Line::lbf_HIDDEN].value = !(PROJECT_PLUS_EX_BUILD && ENSURE_PRE_PP30_COMPAT);
@@ -1191,8 +1191,10 @@ void CodeMenu()
 #endif
 
 	MainLines.push_back(new Selection("Code Menu Activation", { "Default", "PM 3.6", "OFF" }, 0, CODE_MENU_ACTIVATION_SETTING_INDEX));
-	
-	MainLines.push_back(new Selection("CSS Roster Version", { "vBrawl", "Project+" }, 0, CSS_VERSION_SETTING_INDEX));
+	if (ROSTER_LIST.size() > 1)
+	{
+		MainLines.push_back(new Selection("CSS Roster Version", ROSTER_LIST, 0, CSS_VERSION_SETTING_INDEX));
+	}
 
 	if (THEME_LIST.size() > 1)
 	{
@@ -1620,6 +1622,12 @@ void CreateMenu(Page& MainPage)
 	//reset line stack
 	AddValueToByteArray(RESET_LINES_STACK_LOC, Header); //reset line stack
 	for (int i = 0; i < MAX_SUBPAGE_DEPTH + 1; i++) { AddValueToByteArray(0, Header); }
+
+	AddValueToByteArray(0, Header); // \ Space reclaimed from lowering MAX_SUBPAGE_DEPTH from 20 to 16! 
+	AddValueToByteArray(0, Header); // | Ensure you update _CodeMenuHeaderConstants.h if you use these.
+	AddValueToByteArray(0, Header); // /
+	AddValueToByteArray(ALT_STAGE_BEHAVIOR_INDEX, Header); // Alternate Stage Line INDEX
+
 	//address arrays
 	//character switcher
 	AddValueToByteArray(CHARACTER_SELECT_P1_INDEX, Header); //P1
@@ -1848,6 +1856,7 @@ void constantOverride() {
 
 	unsigned short prevIndexHiHalf = 0xFFFF;
 	unsigned short prevDestHiHalf = 0xFFFF;
+	std::sort(constantOverrides.begin(), constantOverrides.end());
 	for(auto& x : constantOverrides) {
 
 		unsigned short indexHiHalf = *x.index >> 0x10;
@@ -1857,7 +1866,16 @@ void constantOverride() {
 		{
 			ADDIS(reg1, 0, indexHiHalf);
 		}
-		LWZ(reg3, reg1, indexLoHalf);
+		switch (x.writeSize)
+		{
+			case ConstantPair::ds_BYTE_A: { LBZ(reg3, reg1, indexLoHalf); break; }
+			case ConstantPair::ds_BYTE_B: { LBZ(reg3, reg1, indexLoHalf + 1); break; }
+			case ConstantPair::ds_BYTE_C: { LBZ(reg3, reg1, indexLoHalf + 2); break; }
+			case ConstantPair::ds_BYTE_D: { LBZ(reg3, reg1, indexLoHalf + 3); break; }
+			case ConstantPair::ds_HALF_A: { LHZ(reg3, reg1, indexLoHalf); break; }
+			case ConstantPair::ds_HALF_B: { LHZ(reg3, reg1, indexLoHalf + 2); break; }
+			case ConstantPair::ds_WORD: { LWZ(reg3, reg1, indexLoHalf); break; }
+		}
 		prevIndexHiHalf = indexHiHalf;
 
 		unsigned short destHiHalf = x.address >> 0x10;
@@ -1867,7 +1885,16 @@ void constantOverride() {
 		{
 			ADDIS(reg2, 0, destHiHalf);
 		}
-		STW(reg3, reg2, destLoHalf);
+		switch (x.writeSize)
+		{
+			case ConstantPair::ds_BYTE_A: case ConstantPair::ds_BYTE_B:
+			case ConstantPair::ds_BYTE_C: case ConstantPair::ds_BYTE_D: 
+			{ STB(reg3, reg2, destLoHalf);  break; }
+			case ConstantPair::ds_HALF_A: case ConstantPair::ds_HALF_B:
+			{ STH(reg3, reg2, destLoHalf); break; }
+			case ConstantPair::ds_WORD:
+			{ STW(reg3, reg2, destLoHalf); break; }
+		}
 		prevDestHiHalf = destHiHalf;
 	}
 
@@ -2349,7 +2376,7 @@ void ControlCodeMenu()
 								GetArrayValueFromIndex(PERCENT_SELCTION_VALUE_ARRAY_LOC, Reg8, 0, 3); {
 									LFS(1, 3, Line::VALUE);
 
-									SetRegister(Reg3, 0x80615520);
+									LWZ(Reg3, 13, -0x4150); // Get IfMngr Pointer
 									RLWINM(Reg4, Reg8, 2, 0, 31); //<< 2
 									ADD(Reg3, Reg3, Reg4);	//Reg8 changed to Reg4, P+ 2.28 fix
 									LWZ(Reg3, Reg3, 0x4C);
@@ -2444,8 +2471,8 @@ void ControlCodeMenu()
 								MULLI(Reg3, Reg3, 0x5C); // ... and multiply it by 0x5C, probably to index into a list of entries
 								STWX(Reg1, Reg4, Reg3); // Write 0 into (&gmSelCharData + 0x43AD8 + OffsetIntoListForTargetPort), Setting to 1 gives RAlt?
 
-								STB(Reg1, Reg2, 5); //force costume to 0
-								STB(Reg1, Reg2, 6); //force HUD to 0
+								STB(Reg1, Reg2, 5); // force costume to 0
+								STB(Reg1, Reg2, 6); // force HUD to 0
 							}EndIf();
 						}EndIf(); EndIf();
 					}EndIf();
@@ -2697,28 +2724,43 @@ void ExecuteAction(int ActionReg, int ResetAccumulatorReg)
 	int TempReg6 = 11;
 	int TempReg7 = 12;
 
-	int move = GetNextLabel();
+	int retryActionLabel = GetNextLabel();
+	int abortActionLabel = GetNextLabel();
 
+	Label(retryActionLabel);
 	LoadWordToReg(PageReg, CURRENT_PAGE_PTR_LOC);
 	LWZ(LineReg, PageReg, Page::CURRENT_LINE_OFFSET);
 	ADD(LineReg, LineReg, PageReg);
 	LBZ(TypeReg, LineReg, Line::TYPE);
 
 	//move
+	int doMoveLabel = GetNextLabel();
 	If(ActionReg, EQUAL_I, MOVE_UP); {
 		//move up
 		LHZ(TempReg1, LineReg, Line::UP);
 
-		JumpToLabel(move);
+		JumpToLabel(doMoveLabel);
 	}EndIf();
 	If(ActionReg, EQUAL_I, MOVE_DOWN); {
 		//move down
 		LHZ(TempReg1, LineReg, Line::DOWN);
 
-		Label(move);
+		Label(doMoveLabel);
+		// Attempt the move...
 		Move(LineReg, PageReg, TempReg1, TempReg2, TempReg3);
+		// ... and compare the line we landed on with the current line.
+		CMPL(LineReg, TempReg1, 0);
+		// If we landed back in the same place, this is the only selectable line on the page, so abort the move.
+		JumpToLabel(abortActionLabel, bCACB_EQUAL);
 
-		// Play sound for moving to a different line.
+		// Otherwise, if we did land on a new line, grab its flag byte...
+		LBZ(TempReg1, TempReg2, Line::FLAGS);
+		// ... and see if it's hidden from printing. If so...
+		ANDI(TempReg1, TempReg1, Line::LINE_FLAG_HIDE_FROM_USER);
+		// ... then we want to skip over it instead of selecting it, so we'll just retry the move!
+		JumpToLabel(retryActionLabel, bCACB_NOT_EQUAL);
+
+		// If we've successfully moved, we can now play the sound for moving to a different line.
 		ADDI(4, 0, sii_SND_SE_SYSTEM_CURSOR);
 		JumpToLabel(getPlaySELabel(), bCACB_UNSPECIFIED, 1);
 	}EndIf();
@@ -2790,6 +2832,8 @@ void ExecuteAction(int ActionReg, int ResetAccumulatorReg)
 	ADDI(4, 0, sii_SND_SE_SYSTEM_CANCEL);
 	// ... and play it if the Accumulator wasn't 0 (ie. the previous check against 0 returned not equal).
 	JumpToLabel(getPlaySELabel(), bCACB_NOT_EQUAL, 1);
+
+	Label(abortActionLabel);
 }
 
 // r3 = LineReg, r4 = LineTypeReg, r5 = PageReg, r6 = IsIndirectReg, r7 = StackReg, r8 - r12 = Work Regs (modifed)
@@ -2814,10 +2858,13 @@ void ResetLineSubroutine(int ResetAccumulatorReg)
 	// Grab Line Color early, since whether we're direct or not we'll need it for setting the page color!
 	LBZ(TempReg2, LineReg, Line::COLOR);
 
+	LBZ(TempReg3, LineReg, Line::FLAGS);
+	ANDI(TempReg1, TempReg3, Line::LINE_FLAG_VALUE_LOCKED);
+	JumpToLabel(setPageLineColorLabel, bCACB_NOT_EQUAL);
+
 	CMPLI(IsIndirectReg, 1, 0);
 	JumpToLabel(notIndirectLabel, bCACB_NOT_EQUAL);
-	LBZ(TempReg3, LineReg, Line::FLAGS);
-	ANDI(TempReg3, TempReg3, Line::LINE_FLAGS_FIELDS::LINE_FLAG_IGNORE_INDIRECT_RESET);
+	ANDI(TempReg1, TempReg3, Line::LINE_FLAG_IGNORE_INDIRECT_RESET);
 	JumpToLabel(setPageLineColorLabel, bCACB_NOT_EQUAL);
 
 	Label(notIndirectLabel);
@@ -2978,6 +3025,12 @@ void ModifyLineValueSubroutine()
 	// If not, skip to the end of the subroutine.
 	JumpToLabel(exitLabel, bCACB_GREATER);
 
+	// Also check if the value lock bit is set...
+	LBZ(TempReg1, LineReg, Line::FLAGS);
+	ANDI(TempReg1, TempReg1, Line::LINE_FLAG_VALUE_LOCKED);
+	// ... and if so, also skip to the end of the subroutine.
+	JumpToLabel(exitLabel, bCACB_NOT_EQUAL);
+
 	// Pre-compare the Change Direction into CR7, since we need it for every case.
 	CMPLI(DoDecrReg, 0, 7);
 
@@ -3080,6 +3133,7 @@ void ModifyLineValueSubroutine()
 	BLR();
 }
 
+// Returns New Line Address in TempReg1!
 void Move(int LineReg, int PageReg, int NextLineOffset, int TempReg1, int TempReg2) {
 	LBZ(TempReg2, LineReg, Line::COLOR);
 	XORI(TempReg2, TempReg2, 0x4);
@@ -3556,14 +3610,25 @@ void PrintPage(int PageReg, int SettingsPtrReg, int Reg1, int Reg2, int Reg3, in
 void PrintCodeMenuLine(int LinePtrReg, int SettingsPtrReg, int ColorArrayPtrReg, int TempReg1, int TempReg2)
 {
 	int skipPrintingLabel = GetNextLabel();
+	// Load flag byte to TempReg2!
 	LBZ(TempReg2, LinePtrReg, Line::FLAGS);
-	ANDI(TempReg2, TempReg2, Line::LINE_FLAGS_FIELDS::LINE_FLAG_SKIP_PRINTING);
+	// If the flag for hiding a line is active...
+	ANDI(TempReg1, TempReg2, Line::LINE_FLAG_HIDE_FROM_USER);
+	// ... skip printing it!
 	JumpToLabel(skipPrintingLabel, bCACB_NOT_EQUAL);
 
-	LBZ(TempReg2, LinePtrReg, Line::TYPE);
-
+	// If we are printing, then instead check if the flag for locking a line is active, storing result in CR0.
+	int skipToLoadColorLabel = GetNextLabel();
+	ANDI(TempReg1, TempReg2, Line::LINE_FLAG_VALUE_LOCKED);
+	// Load current color byte.ss
 	LBZ(TempReg1, LinePtrReg, Line::COLOR);
+	// If the line isn't locked, just use the color as is.
+	JumpToLabel(skipToLoadColorLabel, bCACB_EQUAL);
+	// Otherwise though, convert it to the Locked variant of the given color!
+	ADDI(TempReg1, TempReg1, LOCKED_NORMAL_LINE_COLOR_OFFSET);
+	Label(skipToLoadColorLabel);
 	LWZX(TempReg1, ColorArrayPtrReg, TempReg1);
+	LBZ(TempReg2, LinePtrReg, Line::TYPE);
 	SetTextColor(TempReg1, SettingsPtrReg);
 
 	LHZ(4, LinePtrReg, Line::TEXT_OFFSET);
